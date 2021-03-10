@@ -1,0 +1,755 @@
+
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	ABBREX	           13	VUEV..	    VUEC..,VUET..
+	ABBTYP	       400024'	VUET..	    VUEC..
+	ABDEFI	       402313'	VUEC..	    DISP..
+N	ABINIT	       401702'	VUEC..	    
+	ABORTC	       400000'	VUEC..	    VUEM..,VUET..,VUEB..,WIND..,DISP..,SYMB..
+	ABORTV	            4	VUEV..	    VUEM..,VUEC..,VUEU..,VUET..,SYMB..
+N	ABSPAC	       401707'	VUEC..	    
+N	ADDBUF	       400225'	VUEB..	    
+	ADDKBF	       400112'	VUEB..	    VUEU..
+N	ALLBUF	            0	VUEB..	    
+	ALLMOD	          144	VUEB..	    VUEC..,VUEU..
+	ALTPTR	         1340'	VIEW	    VUED..,WIND..
+	APBREA	       401561'	VIEW	    VUEC..
+	APPKBF	       400116'	VUEB..	    VUET..
+	ARGBIG	           21	VUEV..	    VUEC..
+	ARGDIV	           22	VUEV..	    VUEC..
+	ARGFLG	           24	VUEV..	    VUEM..,VUEC..
+	ARGMPY	           20	VUEV..	    VUEC..,VUET..
+	ARGSTK	           23	VUEV..	    VUEC..
+	ASKTTY	       400472'	VUED..	    VUEM..,VUET..
+N	AUTBLK	         5727'	VIEW	    
+	AUTOIN	          350	VUEB..	    VUEV..,VUET..
+	AUTOLO	       401141'	VUEB..	    VUEM..
+	AUTOTI	          351	VUEB..	    VUEV..
+	AUTOWR	          352	VUEB..	    VUEV..
+N	BASE	         4763'	VIEW	    
+	BAUDRA	            1	VUED..	    VUET..
+	BEGLIN	       400206'	VUEC..	    VUEU..,VUET..,DISP..
+	BEGPAG	       400250'	VUEC..	    VUET..,DISP..
+N	BEGPAR	       400542'	VUEC..	    
+	BEGTXT	       400315'	VUEC..	    VUEM..,VUET..,DISP..
+	BFBLK1	         5707'	VIEW	    VUEB..,WIND..
+	BFBLK2	         5717'	VIEW	    VUEU..,VUEB..,WIND..
+	BFRLIN	         4560'	VIEW	    VUEU..
+	BFRPAG	         4561'	VIEW	    VUEU..
+	BIGARG	       400007'	VUEC..	    DISP..
+	BINDKE	       404660'	VUEC..	    VUET..
+	BLANKL	       401517'	VIEW	    VUEU..
+N	BLANKP	       401616'	VIEW	    
+	BSBACK	           12	VUEV..	    VUEC..,VUEU..,VUET..
+S	BUFFER	       400024'	LDYI..+	    VUEB..,+DYIO..
+S	BUFHDR	       400411'	LDYI..+	    +DYIO..
+	BUFINI	       400150'	VUEB..	    VUEM..
+N	BUFNAM	       400027'	VUEB..	    
+N	BUFUNM	       400106'	VUEB..	    
+N	CALLEX	       400023'	SPAC..	    
+	CASEOK	           27	VUEV..	    VUET..,VIEW
+N	CASTYP	       400010'	VUET..	    
+	CCLFLA	          312	VUEM..	    VUEB..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+N	CCLMUL	       401237'	VUEB..	    
+	CCLSTU	       401174'	VUEB..	    VUEM..
+N	CCOLS	           10	VUED..	    
+	CFUNCT	  4400 001454	VUET..	    VUEC..
+	CHNIOR	       400204'	VIEW	    VUEI..
+	CHNIOV	       400204'	VIEW	    VUEI..
+N	CHNTBL	            0	VUEI..	    
+	CLEARL	       400356'	VUED..	    VUEU..,REDI..,ISRC..,SYMB..
+	CLEARS	       400323'	VUED..	    VUEC..,VUEU..,HELP..,WIND..
+N	CLINES	            7	VUED..	    
+M	CLOSE	       400110'	VUEI..	    VUEB..,WANT..,PTYT..,SPOO..,+DYIO..
+MS	CLOSE	       400366'	LDYI..+	    VUEB..,WANT..,PTYT..,SPOO..,+DYIO..
+	CLOSEF	       400560'	LDYI..	    WANT..
+	CLREOS	       400333'	VUED..	    VUEU..
+	CLRKBF	       400121'	VUEB..	    VUEC..,VUET..
+N	CLRMRK	       401521'	VUEC..	    
+N	CLULIN	         4541'	VIEW	    
+N	CLUPOS	         4542'	VIEW	    
+	CMDFIL	       400235'	VUEI..	    VUEC..
+	CMDLVL	         4540'	VIEW	    VUEM..,VUEU..,ISRC..
+	CMDSTK	            0	VUEM..	    ISRC..,VIEW
+N	CMUDEC	       400000'	PPNC..	    
+	CNAMES	  4400 001235	VUET..	    VUEC..
+	COMBUF	       400406'	VUEB..	    WIND..
+	COMCHA	         4546'	VIEW	    VUEM..,VUEC..,ISRC..
+	COMMEN	           33	VUEV..	    VUEC..,VUET..
+	CORECH	       400252'	VIEW	    VUEU..
+	CORESI	       400227'	VIEW	    VUEB..
+N	COS	       400110'	MATH..	    
+	CRWNIN	           11	VUEV..	    VUEU..,VUET..
+N	CSTCHR	            1	REDI..	    
+	CSTCLR	            5	REDI..	    VUED..
+	CSTDEL	            3	REDI..	    VUED..
+	CSTINS	            4	REDI..	    VUED..
+N	CSTLIN	            0	REDI..	    
+	CSTPOS	            2	REDI..	    VUED..
+	CTRLAR	       403702'	VUEC..	    VUET..,DISP..
+	CTRLB	       400141'	VUEC..	    VUET..,DISP..
+	CTRLC	       400004'	VUEC..	    VUET..,DISP..
+	CTRLD	       403004'	VUEC..	    VUET..,DISP..
+	CTRLF	       400075'	VUEC..	    VUET..,DISP..
+	CTRLJ	       404035'	VUEC..	    VUET..,DISP..
+	CTRLK	       403250'	VUEC..	    VUET..,DISP..
+	CTRLL	       400340'	WIND..	    VUEC..,HELP..,VUET..,DISP..
+	CTRLN	       400350'	VUEC..	    VUET..,DISP..
+	CTRLN2	       400775'	VUEU..	    VUEC..
+	CTRLO	       402246'	VUEC..	    VUET..,DISP..
+	CTRLP	       400426'	VUEC..	    VUET..,DISP..
+	CTRLP2	       401020'	VUEU..	    VUEC..,WIND..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	CTRLQ	       402225'	VUEC..	    VUET..,DISP..
+	CTRLR	       402444'	VUEC..	    VUET..,DISP..
+	CTRLS	       402510'	VUEC..	    VUET..,DISP..
+	CTRLT	       403410'	VUEC..	    VUET..,DISP..
+	CTRLV	       401361'	VUEC..	    VUET..,DISP..
+	CTRLW	       403172'	VUEC..	    VUET..,DISP..
+	CTRLX2	       400726'	WIND..	    VUET..,DISP..
+	CTRLXE	       401641'	VUEB..	    VUET..
+	CTRLXF	       401645'	VUEB..	    VUET..
+	CTRLXI	       400660'	VUEB..	    VUET..
+	CTRLXM	       400251'	VUEM..	    VUET..,DISP..
+	CTRLXR	       401030'	VUEB..	    VUET..,DISP..,VIEW
+	CTRLXS	       401637'	VUEB..	    VUET..,DISP..
+	CTRLXT	       405266'	VUEC..	    VUET..,DISP..
+	CTRLXV	       401047'	VUEB..	    VUET..,DISP..,VIEW
+	CTRLXW	       401551'	VUEB..	    VUET..,DISP..
+	CTRLXZ	       401233'	WIND..	    VUET..
+	CTRLZ	       401606'	VUEC..	    VUET..,WIND..,DISP..
+	CUCL	       400167'	VIEW	    VUEB..
+	CURBUF	          347	VUEB..	    VUEC..,VUEU..
+	CURLIN	         4563'	VIEW	    VUEC..,VUEU..,WIND..,REDI..
+	CURWIN	          131	WIND..	    REDI..
+N	DATE	       400000'	DAYT..	    
+	DAYOFW	       400035'	DAYT..	    MSGS..
+	DAYTIM	       404507'	VUEC..	    VUET..
+N	DAYT.0	       400000'	DAYT..	    
+N	DAYT.1	       400256'	DAYT..	    
+	DAYT.L	       400256'	DAYT..	    DAYT..
+	DAYT.P	       400267'	DAYT..	    DAYT..
+	DDT	            1'	UDDT	    SIX1..
+	DDTEND	         6437'	UDDT	    SIX1..
+	DEBCOR	       404536'	VUEC..	    VUET..
+	DECCMU	       400010'	PPNC..	    MSGS..
+N	DECPTR	       401310'	VIEW	    
+	DEFDSK	         5703'	VIEW	    VUEB..,VUEI..,WIND..
+	DEFWIN	       400347'	VUED..	    WIND..,REDI..,ISRC..
+	DELBAC	       400317'	VUEU..	    VUEC..
+	DELCHA	       400232'	VUED..	    REDI..
+	DELFOR	       400313'	VUEU..	    VUEC..
+	DELLIN	       400305'	VUED..	    REDI..
+	DELVAL	            3	VUEV..	    VUEU..,VUET..,SYMB..,VIEW
+N	DISCRE	       400356'	RAND..	    
+N	DISP.0	       400000'	DISP..	    
+N	DISP.1	       400362'	DISP..	    
+	DISP.C	       400362'	DISP..	    DISP..
+	DISTBL	         3531'	VIEW	    VUEM..,VUEC..,DISP..,ISRC..
+	DMPBFR	         4551'	VIEW	    VUEB..
+N	DMPBSZ	           30	VIEW	    
+	DMPIN	       401642'	VIEW	    VUEB..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	DMPOUT	       401656'	VIEW	    VUEB..
+	DOCOMM	       404415'	VUEC..	    VUET..
+	DORESC	       400775'	VIEW	    VUEM..
+	DOSTAT	       401312'	VUEU..	    REDI..
+	DOTMPC	       400026'	TMPC..	    VUEB..
+	DSKBFH	         4772'	VIEW	    VUEB..
+	DSKBUF	         4775'	VIEW	    VUEB..
+	DSPINI	       400000'	DISP..	    VUEM..
+N	DUMPIN	       400745'	LDYI..	    
+N	DUMPOU	       401010'	LDYI..	    
+N	DYIO.0	       400000'	DYIO..	    
+N	DYIO.1	       400424'	DYIO..	    
+	DYIO.G	            0'	DYIO..	    DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,
+					    DYIO..
+	DYIO.L	       400424'	DYIO..	    DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,
+					    DYIO..,DYIO..,DYIO..,DYIO..
+	DYIO.O	           20'	DYIO..	    DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,
+					    DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,
+					    DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..,DYIO..
+N	ECHORD	       400567'	VUEU..	    
+	ECHOSI	            2	VUED..	    WIND..,REDI..,ISRC..
+	EFLOUT	       400571'	FLOU..	    MSGS..
+	ENDLIN	       400227'	VUEC..	    VUET..,DISP..
+	ENDPAG	       400270'	VUEC..	    VUET..,DISP..
+N	ENDPAR	       400561'	VUEC..	    
+	ENDTXT	       400330'	VUEC..	    VUET..,DISP..
+M	ENTER	       400153'	VUEI..	    VUEB..,WANT..,SPOO..,+DYIO..
+MS	ENTER	       400144'	LDYI..+	    VUEB..,WANT..,SPOO..,+DYIO..
+	EOLBRE	       401374'	VIEW	    VUEC..,VUEU..
+N	EOLCHX	       401366'	VIEW	    
+	EOLTYP	       401403'	VIEW	    VUEU..
+N	ERLANG	       400175'	RAND..	    
+N	ERRFIL	       400000'	VUEB..	    
+	ERRSTR	       400630'	VUEU..	    VUEM..,VUEC..,VUEB..,VUEI..
+	ESCVAL	            0	VUEV..	    VUEC..,VUET..,ISRC..,SYMB..,VIEW
+	EXCMRK	       401543'	VUEC..	    VUET..,DISP..
+N	EXERT	       400124'	VUED..	    
+N	EXISTS	       400050'	VUEB..	    
+	EXP	       400161'	MATH..	    RAND..
+	EXTEND	       405123'	VUEC..	    VUET..,DISP..
+	EXTHEA	       405044'	VUEC..	    VUET..
+	EXTHEL	       405046'	VUEC..	    VUET..
+N	FASTNO	       400150'	RAND..	    
+	FEF	       400301'	VIEW	    WIND..
+N	FEN	       400333'	VIEW	    
+	FILBLK	         4571'	VIEW	    VUEU..,VUEB..
+N	FILBUF	       400741'	VUEB..	    
+	FILESC	       400212'	FILE..	    VUEC..,VUEB..,VUEI..,WANT..
+N	FILE.0	       400000'	FILE..	    
+Flagbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+N	FILE.1	       400252'	FILE..	    
+	FILE.C	       400252'	FILE..	    FILE..
+	FILE.L	       400254'	FILE..	    FILE..
+	FILE.O	            0'	FILE..	    FILE..
+	FILE.P	       400257'	FILE..	    FILE..
+	FILINS	           15	VUEV..	    VUET..
+N	FINDBR	       401543'	VIEW	    
+	FLOUT	       400554'	FLOU..	    MSGS..
+N	FLOU.0	       400000'	FLOU..	    
+N	FLOU.1	       400627'	FLOU..	    
+	FLOU.C	       400627'	FLOU..	    FLOU..
+	FLOU.L	       400631'	FLOU..	    FLOU..
+	FLOU.O	            0'	FLOU..	    FLOU..
+	FLOU.P	       400642'	FLOU..	    FLOU..
+	FLUBFR	       400573'	VIEW	    VUEC..,VUEU..,VUEB..,VUED..,REDI..,ISRC..,SYMB..
+	FLUSH	         4762'	VIEW	    VUEC..,VUEU..,VUEB..,SYMB..
+	FMTBRE	       401420'	VIEW	    VUEC..
+N	FMTCHX	       401412'	VIEW	    
+N	FRECHN	       400012'	VUEI..	    
+N	FROMPR	       400446'	VUED..	    
+	FROMST	       400043'	WIND..	    VUEU..
+N	FSCTYP	       400000'	VUET..	    
+N	FTP	       401340'	VIEW	    
+N	GARBAG	       400353'	SPAC..	    
+N	GBMOD	       400100'	VUEB..	    
+N	GBNUM	       400064'	VUEB..	    
+	GETAUN	       401121'	VIEW	    VUEC..
+S	GETCHA	       400000'	LDYI..+	    WANT..,PTYT..,SPOO..,+DYIO..
+N	GETCHN	       400027'	VUEI..	    
+	GETCHX	       401303'	VIEW	    VUEC..,VUEU..,REDI..
+N	GETCMD	       400331'	VUEM..	    
+	GETIND	       400370'	VUEU..	    VUEC..
+	GETJOB	       401130'	VIEW	    VUEB..
+	GETLEN	       401101'	VIEW	    VUED..
+	GETNUM	       400204'	SYMB..	    VUEC..
+	GETPOS	       400507'	VUEU..	    VUEC..
+	GETPPN	       401125'	VIEW	    VUEB..,WIND..
+N	GETPTR	       401266'	VIEW	    
+N	GETPTY	       400475'	PTYT..	    
+N	GETSPA	       400157'	SPAC..	    
+	GETSTR	       400000'	SYMB..	    VUEC..,VUEB..
+N	GETSTS	       400651'	LDYI..	    
+	GETTTY	       401074'	VIEW	    VUED..
+	GETWID	       401075'	VIEW	    VUED..
+	GOXY	       400362'	VUED..	    VUEU..,WIND..,REDI..,ISRC..,SYMB..,VIEW
+N	HALT	254200 000000	UDDT	    
+	HBOT	         4553'	VIEW	    VUEM..,VUEC..,VUEU..,VUEB..,WIND..,ISRC..
+N	HELP.0	       400000'	HELP..	    
+N	HELP.1	       400117'	HELP..	    
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	HELP.C	       400117'	HELP..	    HELP..
+	HELP.L	       400132'	HELP..	    HELP..
+	HELP.P	       400133'	HELP..	    HELP..
+	HEND	         4552'	VIEW	    VUEM..,VUEC..,VUEU..,VUEB..,WIND..,REDI..,ISRC..
+N	HOME	       400410'	VUED..	    
+	HPTR	         4554'	VIEW	    VUEM..,VUEC..,VUEU..,VUEB..
+	ICTRLR	       401060'	ISRC..	    VUET..,DISP..
+	ICTRLS	       400760'	ISRC..	    VUET..,DISP..
+N	IDC	       400000'	REDI..	    
+N	INDEND	           10	VUEV..	    
+	INDENT	            6	VUEV..	    VUEC..,VUET..
+N	INITPT	       400464'	PTYT..	    
+N	INITSP	       400000'	SPAC..	    
+	INSCHA	       400250'	VUED..	    REDI..
+	INSERT	       400326'	VUEU..	    VUEC..,VUEB..
+	INSKBF	       400126'	VUEB..	    VUET..,DISP..
+	INSLIN	       400267'	VUED..	    REDI..
+N	INVERS	       400452'	VUED..	    
+	INWIND	            6	REDI..	    VUED..,WIND..,ISRC..
+S	IOSTAT	            0	LDYI..+	    +DYIO..
+N	ISFLAG	            0	ISRC..	    
+N	ISRC.0	       400000'	ISRC..	    
+N	ISRC.1	       401162'	ISRC..	    
+	ISRC.C	       401162'	ISRC..	    ISRC..
+	ISRC.G	            0'	ISRC..	    ISRC..
+	ISRC.L	       401212'	ISRC..	    ISRC..
+	ISRC.O	            1'	ISRC..	    ISRC..
+	ISRC.P	       401221'	ISRC..	    ISRC..
+	IUDENT	            7	VUEV..	    VUEC..,VUET..
+N	JEN	254500 000000	UDDT	    
+N	JOV	255400 000000	UDDT	    
+	JSTINS	           14	VUEV..	    VUEC..,VUET..
+	JSTTYP	       400004'	VUET..	    VUEC..,VUEU..
+	JUST	       401132'	VUEU..	    VUEC..
+N	KBDPTR	          313	VUEM..	    
+N	KBFBEG	          356	VUEB..	    
+	KBFLEN	          361	VUEB..	    VUEU..
+	KBFPTR	          357	VUEB..	    VUEU..
+	KBFSIZ	          360	VUEB..	    VUEU..
+	KILLER	          353	VUEB..	    VUEM..,VUEC..
+	KILLFO	       400240'	VUEU..	    VUEC..
+	KILLMU	       403327'	VUEC..	    VUET..
+	LASKIL	          354	VUEB..	    VUEM..,VUEC..
+	LASMOV	          355	VUEB..	    VUEC..
+	LASTPA	       401245'	VUEC..	    VUET..,DISP..
+N	LDYI.0	       400000'	LDYI..	    
+N	LDYI.1	       401045'	LDYI..	    
+	LDYI.G	            0'	LDYI..	    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	LDYI.L	       401045'	LDYI..	    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..
+	LDYI.O	           20'	LDYI..	    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,LDYI..,
+					    LDYI..,LDYI..,LDYI..
+	LEFTMA	       400341'	VUED..	    VIEW
+N	LINEAR	       400413'	RAND..	    
+N	LINEMA	            0	WIND..	    
+	LINESZ	         4535'	VIEW	    VUED..,WIND..,REDI..,ISRC..
+N	LINMAX	          103	REDI..	    
+	LOG	       400117'	MATH..	    RAND..
+M	LOOKUP	       400135'	VUEI..	    VUEB..,WANT..,SPOO..,+DYIO..
+MS	LOOKUP	       400123'	LDYI..+	    VUEB..,WANT..,SPOO..,+DYIO..
+	LOWEND	         4555'	VIEW	    VUEC..,VUEU..,VUEB..,WIND..,REDI..,ISRC..
+	LOWPTR	         4557'	VIEW	    VUEC..,VUEU..,VUEB..
+N	LREAD	       400533'	LDYI..	    
+	LSTBUF	       400261'	VUEB..	    VUET..,DISP..
+N	LWCASE	       400020'	VUET..	    
+	MAIL	       401103'	VIEW	    VUEU..
+	MAKBOX	       400000'	VUEU..	    VUEC..
+	MARK	         4570'	VIEW	    VUEC..,VUEU..
+N	MATH.0	       400000'	MATH..	    
+N	MATH.1	       400237'	MATH..	    
+	MATH.L	       400237'	MATH..	    MATH..
+	MATH.P	       400253'	MATH..	    MATH..
+N	MAXCAL	          144	VUEM..	    
+	MAXSS	            3'	VIEW	    WIND..
+	MCRBYD	       400237'	VUEM..	    VUET..
+	MCRDEF	         1507'	VIEW	    VUEM..
+	MCRPTR	         1510'	VIEW	    VUEM..
+N	MENTER	       400171'	VUEI..	    
+	METAA	       400150'	VUEM..	    VUET..,DISP..
+	METAAR	       403756'	VUEC..	    VUET..,DISP..
+	METAB	       400152'	VUEC..	    VUET..,DISP..
+	METABA	       401237'	WIND..	    VUET..,DISP..
+	METACN	       401451'	VUEC..	    VUET..,DISP..
+	METACP	       401501'	VUEC..	    VUET..,DISP..
+	METAD	       403015'	VUEC..	    VUET..,DISP..
+	METADE	       403056'	VUEC..	    VUET..,DISP..
+	METAF	       400106'	VUEC..	    VUET..,DISP..
+	METAJ	       403563'	VUEC..	    VUET..
+	METAK	       403225'	VUEC..	    VUET..,DISP..
+	METAL	       400213'	VUEM..	    VUET..,DISP..
+	METALB	       400702'	VUEC..	    VUET..,DISP..
+	METALP	       404303'	VUEC..	    VUET..,DISP..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	METAM	       405174'	VUEC..	    VUET..
+	METAPR	            1	VUEV..	    VUET..,ISRC..,VIEW
+	METAQ	       402774'	VUEC..	    VUET..,DISP..
+	METAQU	       400000'	HELP..	    VUET..,DISP..
+	METAR	       403000'	VUEC..	    VUET..,DISP..
+	METARB	       401133'	VUEC..	    VUET..,DISP..
+	METARP	       404171'	VUEC..	    VUET..,DISP..
+	METAS	       404752'	VUEC..	    VUET..
+	METAV	       401414'	VUEC..	    VUET..,DISP..
+	METAW	       403202'	VUEC..	    VUET..,DISP..
+	METAZ	       401644'	VUEC..	    VUET..,WIND..,DISP..
+	METCAR	       404010'	VUEC..	    VUET..,DISP..
+	METCW	       403176'	VUEC..	    VUET..,DISP..
+	MODBLK	         5737'	VIEW	    VUEC..,VUEU..
+	MODPOS	            2'	VIEW	    VUED..,WIND..,REDI..,ISRC..
+N	MONTTY	            3	VUED..	    
+	MOVBUF	       400237'	VIEW	    VUEB..
+	MOVEBA	       401217'	VIEW	    VUEC..,VUEU..,WIND..,ISRC..
+	MOVEFO	       401162'	VIEW	    VUEC..,VUEU..,WIND..,ISRC..
+	MSGSCA	       400454'	MSGS..	    WANT..
+N	MSGS.0	       400000'	MSGS..	    
+N	MSGS.1	       401022'	MSGS..	    
+	MSGS.L	       401022'	MSGS..	    MSGS..
+	MSGS.O	            0'	MSGS..	    MSGS..
+	MSGS.P	       401055'	MSGS..	    MSGS..
+	MULINE	         4544'	VIEW	    VUEC..,VUEU..,VUEB..,WIND..,REDI..
+	MUNCHI	       400475'	VIEW	    VUEB..
+	MUNCHL	       400753'	VUEU..	    VUEC..
+N	MUNCHN	       400642'	VUEU..	    
+	MUNCHO	       400524'	VIEW	    VUEB..
+N	MYSPAC	       402010'	VUEC..	    
+N	NEGEXP	       400055'	RAND..	    
+	NEXTPA	       401323'	VUEC..	    VUET..,DISP..
+N	NEXTVC	       400523'	VUEC..	    
+N	NHASH	           45	REDI..	    
+N	NOMARK	       401515'	VUEC..	    
+M	NORMAL	       400451'	VUED..	    WIND..
+M	NORMAL	       400101'	RAND..	    WIND..
+	NOWAIT	         4771'	VIEW	    VUEM..
+U	NULL				    VUEC..
+	NUMARG	       400022'	VUEC..	    VUEM..,DISP..
+N	NUMB.0	       400000'	NUMB..	    
+N	NUMB.1	       400240'	NUMB..	    
+	NUMB.L	       400240'	NUMB..	    NUMB..
+N	NUMO.0	       400000'	NUMO..	    
+N	NUMO.1	       400126'	NUMO..	    
+	NUMO.L	       400126'	NUMO..	    NUMO..
+	NUMO.O	            0'	NUMO..	    NUMO..
+N	NUMSCA	       400061'	NUMB..	    
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+N	OCLINE	         4545'	VIEW	    
+N	OHASH	            7	REDI..	    
+M	OPEN	       400046'	VUEI..	    VUEB..,WANT..,PTYT..,SPOO..,+DYIO..
+MS	OPEN	       400102'	LDYI..+	    VUEB..,WANT..,PTYT..,SPOO..,+DYIO..
+S	OUTMSG	       400420'	LDYI..+	    WANT..,+DYIO..
+	OUTNUM	       400045'	NUMO..	    MSGS..,DAYT..
+	P	         4550'	VIEW	    VUEB..
+	PARHEL	       404721'	VUEC..	    VUET..
+	PBREAK	       401472'	VIEW	    VUEU..
+	PCOPY	         4551'	VIEW	    VUEB..
+	PDATE	       400131'	DAYT..	    VUEC..,MSGS..
+	PERCNT	            5	VUEV..	    VUEU..
+	PHYSLI	         4533'	VIEW	    VUEU..,VUED..,WIND..,REDI..,ISRC..,SYMB..
+	PHYSPO	         4532'	VIEW	    VUEU..,VUED..,REDI..,ISRC..,SYMB..
+	PLOCS	  4400 001423	VUET..	    VUEC..
+	PNAMES	  4400 000147	VUET..	    VUEC..
+N	POISSO	       400276'	RAND..	    
+	POPIO	       400076'	VUEM..	    VIEW
+	PPN	         4565'	VIEW	    VUEB..
+N	PPNC.0	       400000'	PPNC..	    
+N	PPNC.1	       400024'	PPNC..	    
+N	PREVVC	       400504'	VUEC..	    
+	PRMPTC	            6	VUED..	    VUEM..
+	PTIME	       400174'	DAYT..	    VUEC..,MSGS..
+N	PTYATT	       401103'	PTYT..	    
+N	PTYCLR	       400221'	PTYT..	    
+N	PTYDET	       401047'	PTYT..	    
+N	PTYHIB	       400171'	PTYT..	    
+N	PTYINC	       400135'	PTYT..	    
+N	PTYINW	       400241'	PTYT..	    
+N	PTYKJO	       400760'	PTYT..	    
+N	PTYLOG	       400617'	PTYT..	    
+N	PTYMON	       400467'	PTYT..	    
+N	PTYOC	       400374'	PTYT..	    
+N	PTYOST	       400444'	PTYT..	    
+N	PTYREL	       401223'	PTYT..	    
+N	PTYRES	       400115'	PTYT..	    
+N	PTYT.0	       400000'	PTYT..	    
+N	PTYT.1	       401302'	PTYT..	    
+	PTYT.C	       401302'	PTYT..	    PTYT..
+	PTYT.L	       401310'	PTYT..	    PTYT..
+	PTYT.O	            0'	PTYT..	    PTYT..
+	PTYT.P	       401337'	PTYT..	    PTYT..
+N	PTYWAI	       400263'	PTYT..	    
+N	PURGEO	       400576'	LDYI..	    
+N	PUSHIO	       400050'	VUEM..	    
+	PUSHLV	       400067'	VUEM..	    VUEI..
+	PUTBCD	       401132'	VIEW	    VUED..
+	PUTCH	       400552'	VIEW	    VUED..,ISRC..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	PUTNUM	       400615'	VIEW	    VUED..
+	PUTOCT	       400605'	VIEW	    VUED..
+	PUTPAD	       401143'	VIEW	    VUED..
+N	PUTRDX	       400634'	VIEW	    
+	PUTSTR	       400651'	VIEW	    VUEC..,VUEU..
+N	QREG	       400763'	VIEW	    
+	QUIET	       400544'	VIEW	    VUET..,DISP..
+	QUIT	       401070'	VIEW	    VUEC..,VUEB..
+	RADIX	           17	VUEV..	    VUEM..,VUEC..
+N	RANDIN	       400000'	RAND..	    
+N	RAND.0	       400000'	RAND..	    
+N	RAND.1	       400476'	RAND..	    
+	RAND.L	       400476'	RAND..	    RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,
+					    RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,
+					    RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,
+					    RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..,RAND..
+S	READ	       400165'	LDYI..+	    VIEW,+DYIO..
+	READCC	       400355'	VIEW	    VUEM..,VUEC..
+	READCH	       400356'	VIEW	    VUEM..,VUEC..,VUEU..,HELP..,ISRC..,SYMB..
+	READLI	       400423'	LDYI..	    WANT..
+	REDISP	       402150'	REDI..	    VUEM..,VUEC..,WIND..
+N	REDI.0	       400000'	REDI..	    
+N	REDI.1	       403147'	REDI..	    
+	REDI.C	       403147'	REDI..	    REDI..
+	REDI.G	            0'	REDI..	    REDI..
+	REDI.L	       403151'	REDI..	    REDI..
+	REDI.O	          141'	REDI..	    REDI..
+	RELCOR	       400214'	VIEW	    VUEB..
+	RELEAS	       400070'	VUEI..	    VUEM..
+N	RELSPA	       400043'	SPAC..	    
+M	RENAME	       400217'	VUEI..	    VUEB..
+M	RENAME	       400625'	LDYI..	    VUEB..
+	REPEAT	         4547'	VIEW	    VUEM..,VUEC..,VUEU..,WIND..
+	REPSTK	          145	VUEM..	    VIEW
+	RESET	       400000'	VIEW	    VUEM..
+	RETKBD	       400140'	VUEM..	    VUET..,DISP..
+N	RSRCHR	         5610'	VIEW	    
+N	RSRPTR	         5605'	VIEW	    
+N	RSRSTK	         5701'	VIEW	    
+	RST	         5401'	VIEW	    VUEC..
+	RUBOUT	       403051'	VUEC..	    VUET..,DISP..
+	SCREEN	            4'	VIEW	    WIND..,REDI..
+	SCRLEN	            0'	VIEW	    VUED..,WIND..
+	SCRMOD	         4543'	VIEW	    VUEC..,VUEU..,VUEB..,WIND..,REDI..
+	SCROFF	         4562'	VIEW	    VUED..,WIND..,REDI..
+	SCRSZE	            1'	VIEW	    VUEC..,VUED..,WIND..,REDI..
+N	SEFLOU	       400607'	FLOU..	    
+	SEFMOD	           25	VUEV..	    VUET..,WIND..
+	SELBUF	       400611'	VUEB..	    VUET..,DISP..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	SELFI	       402160'	VUEC..	    VUET..,DISP..
+	SETARG	       400055'	VUEC..	    DISP..
+	SETIND	       400435'	VUEU..	    VUEC..
+	SETLFT	       403550'	VUEC..	    VUET..
+	SETMRK	       401530'	VUEC..	    VUET..,DISP..
+	SETRGT	       403554'	VUEC..	    VUET..
+N	SETSTS	       400671'	LDYI..	    
+	SILENT	         4537'	VIEW	    VUEU..,REDI..
+N	SIN	       400037'	MATH..	    
+	SIX12	       407565'	SIX1..	    SIXL..
+N	SIX1.0	       400000'	SIX1..	    
+N	SIX1.1	       407746'	SIX1..	    
+	SIX1.C	       407746'	SIX1..	    SIX1..
+	SIX1.G	            0'	SIX1..	    SIX1..
+	SIX1.L	       410032'	SIX1..	    SIX1..
+	SIX1.O	            7'	SIX1..	    SIX1..
+	SIX1.P	       410155'	SIX1..	    SIX1..
+	SIX41	           41	SIXL..	    SIX1..
+N	SIXDDT	       407720'	SIX1..	    
+N	SIXLC	            4	SIX1..	    
+N	SIXLP	            1	SIX1..	    
+N	SIXRC	            3	SIX1..	    
+N	SIXRP	            0	SIX1..	    
+N	SIXVC	            5	SIX1..	    
+N	SIXVP	            2	SIX1..	    
+N	SIXVRE	            6	SIX1..	    
+	SKIP	         4536'	VIEW	    VUEI..
+	SOSMOD	           26	VUEV..	    VUEC..,VUEU..,VUET..,REDI..,VIEW
+N	SPACEC	           31	VUEV..	    
+	SPACES	           16	VUEV..	    VUEC..,VUEU..,VUET..
+N	SPAC.0	       400000'	SPAC..	    
+N	SPAC.1	       400360'	SPAC..	    
+	SPAC.C	       400360'	SPAC..	    SPAC..
+	SPAC.L	       400361'	SPAC..	    SPAC..
+	SPAC.O	            0'	SPAC..	    SPAC..
+	SPAC.P	       400363'	SPAC..	    SPAC..
+N	SPOOL	       400000'	SPOO..	    
+N	SPOO.0	       400000'	SPOO..	    
+N	SPOO.1	       400206'	SPOO..	    
+	SPOO.L	       400206'	SPOO..	    SPOO..
+	SQRT	       400000'	MATH..	    RAND..
+N	SRCHST	       400021'	ISRC..	    
+	SST	         5175'	VIEW	    VUEC..,ISRC..
+	STATUS	           30	VUEV..	    VUEU..,VUET..
+	SUBMOD	         4567'	VIEW	    VUEU..,ISRC..
+	SYMBOL	       400416'	SYMB..	    VUEC..
+N	SYMB.0	       400000'	SYMB..	    
+N	SYMB.1	       400673'	SYMB..	    
+	SYMB.L	       400673'	SYMB..	    SYMB..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	TABLIN	       404122'	VUEC..	    VUET..,DISP..
+	TABSIZ	         4534'	VIEW	    VUEC..,VUEU..
+	TABWID	           32	VUEV..	    VUEC..,VUET..
+	THEREP	       401326'	VIEW	    VUEC..,ISRC..
+	TIME	       400005'	DAYT..	    MSGS..
+N	TMPCOR	       400000'	TMPC..	    
+N	TMPC.0	       400000'	TMPC..	    
+N	TMPC.1	       400313'	TMPC..	    
+	TMPC.L	       400313'	TMPC..	    TMPC..
+N	TMPDSK	       400053'	TMPC..	    
+	TOLEFT	       404064'	VUEC..	    VUET..
+	TOPROM	       400417'	VUED..	    VUEM..,VUEC..,VUEU..,VUEB..,WIND..,ISRC..,VIEW
+	TORIGH	       404133'	VUEC..	    VUET..
+	TOSTAT	       400017'	WIND..	    VUEU..
+N	TP	          346	VUEB..	    
+N	TSPEED	         4754'	VIEW	    
+	TTYIDL	       400350'	VIEW	    VUEM..,VUEC..,REDI..
+	TTYIN2	       400213'	VUED..	    WIND..
+N	TTYINI	       400165'	VUED..	    
+	TTYPE	         4753'	VIEW	    VUEU..,VUED..
+	TTYTYP	         4752'	VIEW	    VUED..,REDI..
+	TTYZAP	       400337'	VUED..	    VUEC..,VUEB..
+	UCTRLC	       400225'	WIND..	    VUET..,DISP..
+	UCTRLD	       400562'	WIND..	    VUET..,DISP..
+	UCTRLL	       404623'	VUEC..	    VUET..
+	UCTRLN	       400534'	WIND..	    VUET..,DISP..
+	UCTRLO	       400636'	VUEB..	    VUET..,DISP..,VIEW
+	UCTRLP	       400503'	WIND..	    VUET..,DISP..
+	UCTRLZ	       401227'	WIND..	    VUET..,DISP..
+N	UNIFOR	       400035'	RAND..	    
+	UNTABL	       404053'	VUEC..	    VUET..,DISP..
+N	UPCASE	       400014'	VUET..	    
+	UPDATE	       400741'	VIEW	    VUEC..,VUEU..,REDI..
+N	USETI	       400707'	LDYI..	    
+N	USETO	       400726'	LDYI..	    
+	VARINI	       400000'	VUEV..	    VUEM..
+N	VUEB.0	       400000'	VUEB..	    
+N	VUEB.1	       401653'	VUEB..	    
+	VUEB.C	       401653'	VUEB..	    VUEB..
+	VUEB.G	            0'	VUEB..	    VUEB..
+	VUEB.L	       401721'	VUEB..	    VUEB..
+	VUEB.P	       401756'	VUEB..	    VUEB..
+N	VUEC.0	       400000'	VUEC..	    
+N	VUEC.1	       405342'	VUEC..	    
+	VUEC.C	       405342'	VUEC..	    VUEC..
+	VUEC.L	       405434'	VUEC..	    VUEC..
+	VUEC.O	            0'	VUEC..	    VUEC..
+	VUEC.P	       405462'	VUEC..	    VUEC..
+N	VUED.0	       400000'	VUED..	    
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+N	VUED.1	       400527'	VUED..	    
+	VUED.C	       400527'	VUED..	    VUED..
+	VUED.G	            0'	VUED..	    VUED..
+	VUED.L	       400541'	VUED..	    VUED..
+	VUED.P	       400552'	VUED..	    VUED..
+	VUEINI	       405320'	VUEC..	    VUEM..
+N	VUEI.0	       400000'	VUEI..	    
+N	VUEI.1	       400316'	VUEI..	    
+	VUEI.C	       400316'	VUEI..	    VUEI..
+	VUEI.G	            0'	VUEI..	    VUEI..
+	VUEI.L	       400323'	VUEI..	    VUEI..
+	VUEI.O	           20'	VUEI..	    VUEI..
+	VUEI.P	       400336'	VUEI..	    VUEI..
+N	VUEM.0	       400000'	VUEM..	    
+N	VUEM.1	       400506'	VUEM..	    
+	VUEM.C	       400506'	VUEM..	    VUEM..
+N	VUEM.F	       400445'	VUEM..	    
+	VUEM.G	            0'	VUEM..	    VUEM..
+	VUEM.L	       400515'	VUEM..	    VUEM..
+	VUEM.O	          314'	VUEM..	    VUEM..
+	VUEM.P	       400524'	VUEM..	    VUEM..
+	VUETYP	         4566'	VIEW	    VUEU..
+N	VUET.0	       400000'	VUET..	    
+N	VUET.1	       400032'	VUET..	    
+	VUET.C	       400032'	VUET..	    VUET..
+	VUET.P	       400040'	VUET..	    VUET..
+N	VUEU.0	       400000'	VUEU..	    
+N	VUEU.1	       401605'	VUEU..	    
+	VUEU.C	       401605'	VUEU..	    VUEU..
+	VUEU.L	       401634'	VUEU..	    VUEU..
+	VUEU.O	            0'	VUEU..	    VUEU..
+	VUEU.P	       401666'	VUEU..	    VUEU..
+N	VUEV.0	       400000'	VUEV..	    
+N	VUEV.1	       400024'	VUEV..	    
+	VUEV.G	            0'	VUEV..	    VUEV..
+N	WANTRE	       400305'	WANT..	    
+N	WANTWR	       400321'	WANT..	    
+N	WANT.0	       400000'	WANT..	    
+N	WANT.1	       400336'	WANT..	    
+	WANT.C	       400336'	WANT..	    WANT..
+	WANT.L	       400347'	WANT..	    WANT..
+	WANT.O	            0'	WANT..	    WANT..
+	WANT.P	       400362'	WANT..	    WANT..
+	WBREAK	       401453'	VIEW	    VUEC..
+	WHITEL	       400453'	VUED..	    WIND..
+	WHITES	       401444'	VIEW	    VUEC..
+	WHTBRE	       401435'	VIEW	    VUEC..,VUEU..
+N	WHTCHX	       401427'	VIEW	    
+N	WIND.0	       400000'	WIND..	    
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+N	WIND.1	       401273'	WIND..	    
+	WIND.C	       401273'	WIND..	    WIND..
+	WIND.G	            0'	WIND..	    WIND..
+	WIND.L	       401300'	WIND..	    WIND..
+	WIND.P	       401310'	WIND..	    WIND..
+N	WNDBUF	          121	WIND..	    
+N	WNDCRL	           71	WIND..	    
+N	WNDFRE	           61	WIND..	    
+	WNDINI	       400046'	WIND..	    VUEM..
+N	WNDLOW	          111	WIND..	    
+	WNDORG	           51	WIND..	    REDI..
+	WNDPEA	            0	VUED..	    REDI..
+	WNDSIZ	          101	WIND..	    REDI..
+S	WRITE	       400232'	LDYI..+	    MSGS..,FLOU..,DAYT..,NUMO..,PTYT..,+DYIO..
+	WRITEL	       400671'	VIEW	    VUEM..,VUEC..,VUEU..,VUEB..,REDI..,ISRC..,SYMB..
+S	WRITEM	       400302'	LDYI..+	    MSGS..,FLOU..,DAYT..,+DYIO..
+	WRITES	       400652'	VIEW	    VUEC..,VUEU..,VUEB..,VUED..,WIND..,SYMB..
+	WRTNUM	       400616'	VIEW	    VUEC..,VUEU..,VUEB..
+	WRTOCT	       400606'	VIEW	    VUEC..,VUEU..,VUEB..
+	WRTSIX	       400214'	VUEU..	    VUEC..,VUEB..
+N	WSET	       400126'	WIND..	    
+N	XBUFFE	          310	VUEB..	    
+	XCTKBD	       400142'	VUEM..	    VUET..,DISP..
+N	XCTVUE	       400355'	VUEM..	    
+	XPREFI	            2	VUEV..	    VUEM..,VUET..,VIEW
+N	XTFXPS	            4	VUED..	    
+N	XTFYPS	            5	VUED..	    
+N	ZAPLVL	       400125'	VUEM..	    
+	ZAPMAC	       400114'	VUEM..	    VUEC..,VUEU..
+	.BREG	         4235'	VUEM..	    SIX1..
+S	.DREGS	777777 604000	VUEM..+	    +VUEC..,+VUEU..,+HELP..,+VUEV..,+TMPC..,+VUET..,+VUEB..,+VUED..,+VUEI..,+WIND..,+DISP..,
+					    +REDI..,+ISRC..,+SYMB..,+FILE..,+NUMB..,+WANT..,+MSGS..,+FLOU..,+DAYT..,+NUMO..,+PPNC..,
+					    +PTYT..,+SPOO..,+LDYI..,+DYIO..,+SPAC..,+RAND..,+MATH..,+SIX1..
+	.ENT.0	       400000'	VUEM..	    VUEC..,VUEU..,HELP..,TMPC..,VUET..,VUEB..,VUED..,VUEI..,WIND..,REDI..,ISRC..,
+					    FILE..,WANT..,MSGS..,FLOU..,DAYT..,NUMO..,PTYT..,LDYI..,DYIO..,MATH..,SIX1..
+	.ENT.1	       400003'	VUEM..	    VUEC..,VUEU..,TMPC..,VUEB..,VUED..,VUEI..,WIND..,DISP..,REDI..,ISRC..,WANT..,
+					    MSGS..,FLOU..,PPNC..,PTYT..,SPOO..,LDYI..,DYIO..,SPAC..,RAND..,SIX1..
+	.ENT.2	       400007'	VUEM..	    VUEC..,VUEU..,TMPC..,VUED..,SYMB..,MSGS..,PTYT..,LDYI..,DYIO..,SPAC..,RAND..,
+					    MATH..,SIX1..
+	.ENT.3	       400014'	VUEM..	    SYMB..,FILE..,NUMB..,MSGS..,SPAC..,RAND..,SIX1..
+	.ENT.4	       400022'	VUEM..	    REDI..,SYMB..,LDYI..,SPAC..,RAND..,MATH..
+	.ENT.5	       400031'	VUEM..	    REDI..,NUMB..,FLOU..
+	.EXT.0	       400046'	VUEM..	    VUEC..,VUEU..,HELP..,TMPC..,VUET..,VUEB..,VUED..,VUEI..,WIND..,REDI..,ISRC..,
+					    FILE..,WANT..,MSGS..,FLOU..,DAYT..,NUMO..,PTYT..,LDYI..,DYIO..,MATH..,SIX1..
+	.EXT.1	       400045'	VUEM..	    VUEC..,VUEU..,TMPC..,VUEB..,VUED..,VUEI..,WIND..,DISP..,REDI..,ISRC..,WANT..,
+					    MSGS..,FLOU..,PPNC..,PTYT..,SPOO..,LDYI..,DYIO..,SPAC..,RAND..,SIX1..
+	.EXT.2	       400044'	VUEM..	    VUEC..,VUEU..,TMPC..,VUED..,SYMB..,MSGS..,PTYT..,LDYI..,DYIO..,SPAC..,RAND..,
+					    MATH..,SIX1..
+	.EXT.3	       400043'	VUEM..	    SYMB..,FILE..,NUMB..,MSGS..,SPAC..,RAND..,SIX1..
+Flags	Symbol	 Octal Value	Defined in  Referenced in		(all symbols)
+
+	.EXT.4	       400042'	VUEM..	    REDI..,SYMB..,LDYI..,SPAC..,RAND..,MATH..
+	.EXT.5	       400041'	VUEM..	    REDI..,NUMB..,FLOU..
+S	.FREG	777777 777776	VUEM..+	    +VUEC..,+VUEU..,+HELP..,+VUEV..,+TMPC..,+VUET..,+VUEB..,+VUED..,+VUEI..,+WIND..,+DISP..,
+					    +REDI..,+ISRC..,+SYMB..,+FILE..,+NUMB..,+WANT..,+MSGS..,+FLOU..,+DAYT..,+NUMO..,+PPNC..,
+					    +PTYT..,+SPOO..,+LDYI..,+DYIO..,+SPAC..,+RAND..,+MATH..,+SIX1..
+	.JB41	           41	SIXL..	    SIX1..
+U	.JBDA				    UDDT
+	.JBDDT	           74	UDDT	    SIX1..
+U	.JBFF				    LDYI..,DYIO..,SPAC..,SIX1..,UDDT
+U	.JBHNM				    UDDT
+U	.JBHRL				    SIX1..,UDDT
+U	.JBHSM				    UDDT
+U	.JBOPC				    SIX1..
+U	.JBREL				    SPAC..,SIX1..,UDDT
+U	.JBSA				    UDDT
+U	.JBSYM				    SIX1..,UDDT
+U	.JBUSY				    UDDT
+U	.JBUUO				    SIX1..
+N	.JBVER	          137	UDDT	    
+S	.SREG	            0	VUEM..+	    +VUEC..,+VUEU..,+HELP..,+VUEV..,+TMPC..,+VUET..,+VUEB..,+VUED..,+VUEI..,+WIND..,+DISP..,
+					    +REDI..,+ISRC..,+SYMB..,+FILE..,+NUMB..,+WANT..,+MSGS..,+FLOU..,+DAYT..,+NUMO..,+PPNC..,
+					    +PTYT..,+SPOO..,+LDYI..,+DYIO..,+SPAC..,+RAND..,+MATH..,+SIX1..
+S	.VREG	777777 777775	VUEM..+	    +VUEC..,+VUEU..,+HELP..,+VUEV..,+TMPC..,+VUET..,+VUEB..,+VUED..,+VUEI..,+WIND..,+DISP..,
+					    +REDI..,+ISRC..,+SYMB..,+FILE..,+NUMB..,+WANT..,+MSGS..,+FLOU..,+DAYT..,+NUMO..,+PPNC..,
+					    +PTYT..,+SPOO..,+LDYI..,+DYIO..,+SPAC..,+RAND..,+MATH..,+SIX1..
+N	$1B	         6245'	UDDT	    
+N	$2B	         6250'	UDDT	    
+N	$3B	         6253'	UDDT	    
+N	$4B	         6256'	UDDT	    
+N	$5B	         6261'	UDDT	    
+N	$6B	         6264'	UDDT	    
+N	$7B	         6267'	UDDT	    
+N	$8B	         6272'	UDDT	    
+N	$I	         6241'	UDDT	    
+N	$M	         6244'	UDDT	    
+N	%DDTVR	  4001 000250	UDDT	    
+ m@cF
