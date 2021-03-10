@@ -1,0 +1,2557 @@
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42		VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+
+     1					;	%  VUE - Virtually Unsupported Editor  %
+     2					;	----------------------------------------
+     3
+     4			000000			VUEWHO==0	;Who last edited, 0=Tymshare
+     5			000001			VUEVER==1	;Major version
+     6			000000			VUEMIN==0	;Minor version
+     7			000162			VUEEDT==162	;Edit level (# of edits)
+     8
+     9					Comment ~
+    10					** PLEASE!!!  Update VUELST.INF whenever [ha!] anything changes. /CARL **
+    11
+    12					 162 o	Routines AddKbf, MovBfr added to increase size of killbuffer.
+    13					 161 o	Kill-Buffer is now dynamically allocated at startup, all that
+    14						points to it has been modified to know the right things.
+    15					 160 o	DmpBfr now 200 words long to accomodate old-style dump-io.
+    16					 157 o	Modified VUEBUF routines to use DmpBfr table instead of copy.
+    17					 156 o	Changed names of modules to: VUEBUF, VUEHLP and VUETMP.
+    18					 155 o	Changed CLEARLINE to not flush the buffer after operation.
+    19					 154 o	Rearranged CMD table to fit in boxes and fixed NUMARG etc to
+    20						correctly calculate numeric arguments.  C-U n Cmd & <meta>n Cmd.
+    21					 153 o	Modified POPIO and created PUSHIO to handle most single cases.
+    22					 152 o	Renamed routines to EXTHELP and PARHELP in VUECMD and revised
+    23						the box code for EXTHELP to take advantage of the EXTHEAD calls.
+    24					 151 o	Eliminated DMBLK symbol in favor of using a register pair in
+    25						the DMPIN/DMPOUT routines. (Check channel?)
+    26					 150 o	Attempted linking to find misplaced, renamed and deleted vars.
+    27					 147 o	Moved startup code to allow things associated with buffers to
+    28						reside in BUFFER, dispatch in DISPAT, environment in VUEVAR.
+    29					 146 o	Merged text justification (JUST) into VUEUTL and VUECMD.
+    30					 145 o	Merged module QREPL into VUECMD and deleted old module.
+    31					 144 o	Merged module STATUS into VUEUTL and deleted old module.
+    32					 143 o	Moved all the keyboard-macro code into VUEMAN and deleted MLOAD.
+    33					 142 o	Changed CtrlG to abortC and hardcoded "?G"s to AbortValue.
+    34					 141 o	Created module VUEMAN for the main dispatch routines.
+    35					 140 o	Created module VUETAB from VUECHR and EXTEND tables deleted old
+    36						modules after merging routines into VUECMD and VUEUTL.
+    37					 137 o	Created module VUEVAR for the environment variables.
+    38					 136 o	Wrote MakBox routine to handle text inside boxes on the screen.
+    39					 135 o	Merged text and abbrev modes into routine SelfI in VUECMD and
+    40						dissolved modules ABBREV and MODES.
+    41					 134 o	Created module VUECHR to return information about text characters.
+    42					 133 o	Merged many routines from various modules and renamed some as they
+    43						were put into VUECMD,VUEUTL.  Revised and commented all new code
+    44						with speed-up and other enhancements. "** Many things changed **".
+    45					 132 o	Created module VUEUTL for the utility routines.
+    46					 131 o	Created module VUECMD for most of the command procedures.
+    47					 130 o	Modified command loop to optionally "NOT" wait for input so that
+    48						startup could process type-ahead before the screen is painted.
+    49					 127 o	Finished conversion of movement commands.  NOT in production copy.
+    50					 126 o	Implemented eol/wht/fmt-Break and xxxChxr routines in VIEW.
+    51					 125 o	Re-Wrote many movement commands to use pointers.
+    52					 124 o	Added "define mode" for macros and fixed readcc/ch problems.
+    53					 123 o	Added M-X l/r margin, indent next and other missing commands.
+    54					 122 o	More macro code, revamped white-breaks, word-breaks, some general
+    55						buffer position commands. Ctrl&Meta/a/b/d/e/f, ctrln2,ctrlp2.
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1-1
+VUE	INF	23-Aug-71 17:42		VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+
+    56					 121 o	More META-J code.  Converted many checking routines to macro and
+    57						moved them to VIEW.  Major Justification code left in JUST.
+    58					 120 o	Added SPACES,INDENT,BSBACK environment vars.  Changed JUST to not
+    59						assume a paragraph break on a line beginning with a tab and began
+    60						implementation of left-justification for justify-text.
+    61					 117 o	Made DISPAT[.i] references to index off (@DISPAT)[.i] for mapping.
+    62					 116 o	Added "CASE MODE", 0 means anycase, #0 exact match. Spruced up
+    63						routines MOVEBACK,MOVEFORWARD,THEREP,FTP in the process.
+    64					 115 o	Added pointer ALTPTR and support for status line to use it.
+    65					 114 o	Changed FILESC to always clear UNAME field (no default).
+    66					 113 o	Changed {MAIL} message to know about [MAIL] also.
+    67					 112 o	Changed INSCHAR/DELCHAR to take a (times) parameter.
+    68					 111 o	Modified REDISP for faster-cleaner code.
+    69					 110 o	Have M-! check for C-U and if so put current line at B-O-S.
+    70					 107 o	Add M-X Daytime command to print current date & time froom BLILIB.
+    71					 106 o	Add "New Value:" text to set mode parameters routine.
+    72					 105 o	Add checks for DelValue wherever applicable.
+    73					 104 o	Converted Getstr routine to If-else-if instead of SELECT code.
+    74					 103 o	Added typeout of response to "Killbuffer overflow" question.
+    75					 102 o	Made Symbol, GetNum, and Getstr all use flush_1 to designate error.
+    76					 101 o	Introduced a new global "DelValue" to be checked as well as the
+    77						rubout and backspace characters.  This will allow C-A or other
+    78						characters to be used for character rubout upon entry.
+    79
+    80
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 2
+VUE	INF	23-Aug-71 17:42		VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+
+    81
+    82					 100 o	Moved GETSTR from NAME to module SYMBOL and deleted NAME module.
+    83					  77 o	Renamed Metao from REDISP to Quiet in VIEW and converted to Macro.
+    84					  76 o	Replaced GetSymbol with Symbol in anticipation of the rewrite of
+    85						the dispatch code (GetRoutine) to accomodate macro names as well
+    86						as normal command bindings.
+    87					  75 o	Converted WrtRdx,WrtNum,WrtOct to VIEW for faster, cleaner code.
+    88					  74 o	Removed spurious ";"s from VUE and cleaned up some code.
+    89						Added 2 words to end of file blocks for username, FILESC and
+    90						friends all know about the changes.
+    91					  73 o	Created EXERT routine in CURSOR to do all the string output for
+    92						commands and terminal functions. It reads a string of 9-bit bytes.
+    93						Remove IMOUT routine since PUTCH does everything now.
+    94					  72 o	Deleted WRNUM from VIEW and added WRTBCD, WRTPAD in its place.
+    95						Clobbered CURSOR with CURSES for HP2621 only until rewrite is
+    96						complete, so %1(72) is a mini-VUE with only one terminal supported.
+    97					  71 o	Added PUTCHI routine in VIEW do reduce push pushj pop overhead.
+    98						In the process shrunk some code and used v rather than a.
+    99					  70 o	Changed output from FLUBFR et al to use 9-bit bytes & .AXPTR call.
+   100					  67 o	Changed Screen structure to ASCII format packed 5 chars/word.
+   101					  66 o	Removed SCREEN[i,j] from VUE and localized init to WINIT.
+   102					  65 o	Fixed Macro repeat, Meta-C (base_#200,comchr_#143) to C-X E.
+   103					  64 o	Modified BUFFER module for efficiency, fixedbad loop in VUE.
+   104					  63 o	Combined GETSTR and SYMS into new module NAME. Minor editing.
+   105					  62 o	Installed PUTSTRING routine in VIEW, used in CURSOR so far.
+   106					  61 o	Reworked FIXFIL routine to not lose protection on files.
+   107					  60 o	Moved CTRLXS/W/E and associates from VUE to BUFFER, small changes.
+   108					  57 o	Remove unnecessary code in MUNCHI to speed up performance (VIEW).
+   109					  56 o	Reorganize META-RC/LC, LAST/NEXT-PAGE routines from WINDOW into VUE.
+   110					  55 o	Move WRITESTRING, WRITELOSS, UPDATECURSOR into macro (VIEW) to
+   111						possibly improve efficiency & clean up the REDISP module.
+   112					  54 o	Merge FILECO routines EXINI and CTRLXT into VUE.BLI removing
+   113						yet another extraneous module.
+   114					  53 o	Disolve CALIAD module moving metalp and metarp into VUE and
+   115						autoloss into BUFFER.  Also cleaned some autoloss code up.
+   116					  52 o	Add FTSYS ppn [1,315372] to the list of legal running places.
+   117					  51 o	Add protective code to check for RUNEXE style EXE files to RESET.
+   118					  50 o	Remove PASCAL mode.  **** Note ****  *.47 & *.C47 are backups.
+   119					  47 o	Change the window sill to |||||| instead of /\/\/\.
+   120					  46 o	Added global routines CLRKBF and APPKBF which clear the kill
+   121						buffer and (force) an append to the current kill buffer.
+   122					  45 o	Fixed problem in KILL REGION where it looped forever.
+   1		  44 o	Changed GPPN to GETPPN everywhere, added a few GETxxx routines.
+   124					  43 o	Rewrote RESET to get more info, to only PUTLSA for stolen copies,
+   125						and to do the protection rename if can't do just a delete.
+   126					  42 o	Shrunk Ctrlk code and Delforward by creating Killforward routine.
+   127					  41 o	Created KILLMULTILINE routine to do the "right" C-K command
+   128						and restored the "old" behavior to the C-K (Kill Line) routine.
+   129
+   130
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 3
+VUE	INF	23-Aug-71 17:42		VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+
+   131
+   132					  40 o	Deleted FINI, MYRET and MYALTM and replaced with proper code.
+   133					  37 o	Make FEN wait for output complete before resetting TTY.
+   134					  36 o	Changed RESET routine to also set NOECHO and binary mode for
+   135						the TTY, which gets cleared by an EXIT uuo.
+   136					  35 o	Shuffle out the last few routines from module DISPAT.
+   137						Moved CTRLC into VUE, METAM into MODES; deleted CTRLUS and
+   138						FORCEINPUT; Removed all externals which weren't needed.
+   139					  34 o	Rewrote code referencing FEN/FEF so it is only done when needed.
+   140					  33 o	Fixed RESET code for PUTLSA to do it right, instead of UDT!!!.
+   141					  32 o	Re-wrote part of IDC module, renamed it IDCHAR.BLI & installed it.
+   142					  31 o	Changed CTRLL to position curline @ modpos if repcount > scrsize.
+   143					  30 o	Made CTRLK routine "smart" about lines and such.  A single C-K
+   144						command should act as it always did, but C-U n C-K should kill
+   145						<n> complete lines regardless of whether they were empty or not.
+   146					  27 o	Created "killtext" routine called by METAW and METCW thus making
+   147						a single routine for kill/copy from point to mark.
+   148					  26 o	Moved FLUBFR() call inside of READCH so it can be removed from
+   149						every single call to read a character.
+   150					  25 o	Added FLUBFR after CLEARLINE and CLEARSCREEN in module CURSOR.
+   151					  24 o	Added "+DDT" to status line if ddt is loaded.
+   152					  23 o	Changed cost variables a little to make it more "user" nice.  May
+   153						still need twiddling.
+   154					  22 o	Made costs point to variables, CSTpos, CSTclr, CSTins, CSTdel in
+   155						module IDLINE (XLIAD), and had TTYIN2() in module CURSOR setup
+   156						more realistic values dependent upon terminal type.
+   157					  21 o	Changed SCREEN array to 132 * 27, for maxlines on hazeltine 2000
+   158						instead of 132*31 for GTVT06.  Reduced lowcore by 2 pages.
+   159					  20 o	Added routine GETJOB to module VIEW, BUFNAM(name) to BUFFER, to
+   160						allow the buffer name to be 'MAIN'xx where "xx" is the job # in HEX
+   161						so as to allow multiple jobs to edit in the same directory.
+   162					  17 o	Added routine MAIL() to module VIEW, Dostat type {MAIL} on the
+   163						status line IF you have your MAIL WAITING bit set.
+   164					  16 o	Changed ASKTTY to try to read your terminal type from the monitor.
+   165					  15 o	Changed EXini routine to read DSK:VUE.INI from your AUN in FILECO.
+   166					  14 o	Added Global WrtOct routine in SYMS, defined Local WrtRadix also.
+   167					  13 o	Fixed BUG in module MODES: An unterminated "GLOBAL ROUTINE".
+   168					  12 o	Created global routine FILBUF to do common code from routines
+   169						CTRLXR, CTRLXV and CCLSTUFF.
+   170					  11 o	Moved routine CTRLXR from module VUE into module BUFFER.
+   171					  10 o	Added routines GETAUN and a new GETTTY to VIEW to get your logged
+   172						in PPN and your Terminal type (.AXTTP=100) for /J44+ monitors.
+   173					   7 o	Renamed GETTTY to ASKTTY in module CURSOR.
+   174					   6 o	Replaced AUX,TTYCOR,SPEED,VUEVER with VIEW.MAC  /CAB 29-Oct-81.
+   175					   5 o	Changed FEN/FEF and eliminated routines ECHON/ECHOF in VIEW.
+   176					   4 o	Removed extraneous calls to many routines, and removed those
+   177						routines from VIEW.  (SETINT, DBX, ECHOF, ECHON, PAGEON, PAGEOFF).
+   178					   3 o	Created VIEW.MAC to build a single MACRO-10 module.
+   179					   2 o	Created VUEVER.MAC temporarily to house the version number.
+   180					   1 o	Created VUEMAC.MAC as a Tymshare only version of TTYCOR.
+   181					     o	--- Began work on YEUX --- /CAB 28-Oct-81
+   182
+   183
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 4
+VUE	INF	23-Aug-71 17:42		VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+
+   184					1(0)	/CAB	19-May-81	Transmitted as Version %1
+   185
+   186					     o	Rewrote HELP to scan the EXTEND tables and provide M-X ? to list
+   187						function names by category.  M-? still lists by key and function.
+   188					     o	Change abbrev mode to use C-X C-A rather than C-X A.
+   189					     o	Removed "Call Editor" and "Return to VUE" functions.
+   190					     o	Re-bound M-{ and M-} to top and bottom of "current page".
+   191					     o	Implemented C-X [ and C-X ] for "top of" last and next page.
+   192					     o	Unbound "ALL" keys not bound similar to their EMACS counterparts.
+   193					     o	Changed C-X L to "COPY KEY" to allow key "X" to be copied to key "Y".
+   194					     o	Implemented rebinding of keys to function "names".
+   195					     o	Invented "names" for all of the command functions.
+   196					     o	Created EXTEND module to introduce M-X <function> <esc>.
+   197					     o	Removed C-X C-T, renamed it to C-X @ for @file.
+   198					     o	Re-named many of the SYMS variables.  Zapped symbols LBD and TENSEP.
+   199					     o	Removed MACRO functions pending future revision, doing it right.
+   200					     o	Made Keyboard macro's not ask for "delimiter", now end with C-X ).
+   201					     o	Added WRS's PUTLSA. Del if FPN not (SYS) [(VUE) and (YEUX) ok].
+   202					     o	Added TP check, runs EDIT10/EDITOR based on the user's XEXEC mode.
+   203					     o	Explicitly left binding of M-! to mean move this line to top.
+   204					     o	Made C-L work like EMACS, C-U n C-L positions line @ n on screen.
+   205					     o	Changed many text messages all over, more understandable!
+   206					     o	Fixed I-Search mode from clearing .Metaprefix "really"!
+   207					     o	Implemented C-X { and C-X } for Last/Next page (until C-X ] free).
+   208					     o	Moved C-X C-O to C-X C-K for restore "killed" buffer.
+   209					     o	Moved M-E to C-X * for recursive edition levels.
+   210					     o	Moved "macro" commands: M-C >> C-X E, C-X M >> C-X (, M-P >> C-X ),
+   211						M-A changed to C-X Q.
+   212					     o	Moved M-K to the EMACS key M-\ for anticipation of "kill sentence".
+   213					     o	Rebound commands, all illegal ones return "Error"!
+   214					     o	Created HELP.BLI for the on-line help stuff, no longer in CCL.
+   215					     o	Created STATUS.BLI for the statusline stuff, no longer in DISPAT.
+   216					     o	Introduced Writesix(word) for all the sixbit statusline stuff.
+   217					     o	Changed commands around; C-S >> M-S, C-R >> M-R, M-Q >> M-%,
+   218						M-R >> M-$, M-S >> M-*, M-C-S >> C-S, M-C-R >> C-R.
+   219					     o	Only rebind .MetaPrefix if = .Escvalue for I-Search mode.
+   220					     o	Ctrlat now checks hatuvl = 1 means SET, otherwise CLEAR the Mark.
+   221					     o	Writestring now displays LF as ^J, all others use Outstr.
+   222					     o	Removed references to STDFIN and cleaned up the environment some.
+   223					     o	Fix incremental search mode so .MetaPrefix is saved properly.
+   224					     o	Use *.VUE for the buffer names instead of *.FIN.
+   225					     o	Start using VUE.INI instead of FINE.INI.
+   226					     o	Remove DIRED mode completely.
+   227					     o	Remove FINI mode, replace it with INIT mode for now.		[Temp]
+   228					     o	Change status line information.					[Temp]
+   229					     o	Remove Writehack(foo) & replace with new ToPrompt(foo).
+   230					     o	Make ToPrompt() into ToPrompt(Writestring(foo)) everywhere.
+   231					     o	Add .Escvalue for #033 whenever it's not used for META.
+   232					     o	Substitute .XPrefix wherever C-X was used as a prefix.
+   233					     o	Substitute .MetaPrefix wherever #033 is used for META.
+   234
+   235					0(0)	Begin with FINE 1A(3)-2	28-Apr-81 /CAB	* Many modules *
+   236
+   237					~ ; End comment
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+
+   238					Title	View	Macro support subroutines for VUE
+   239					Subttl	VUEMAC	By Carl A Baltrunas - Tymshare Inc -
+   240
+   241						Search	Jobdat
+   242
+   243					;Register Definitions -- See BLISS Manual
+   244
+   245			000000			s=0		; Sreg - PDL & Stack
+   246			000001			t=1		; SuperTemp - Don't expect anything
+   247			000002			f=2		; Freg - Formal parameter stack
+   248			000003			v=3		; Vreg - Value register
+   249			000004			a=4		; Temp
+   250			000005			b=5		; Temp
+   251			000006			c=6		; Temp
+   252			000007			d=7		; Temp
+   253			000010			e=10		; Temp
+   254
+   255	400000'					Twoseg		; Generate Shareable code
+   256
+   257	400000'					Reloc	400000	; Starting at normal address.
+   258
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 2
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Version and relocation information
+
+   259					Subttl	VUEMAC	Version and relocation information
+   260
+   261	000137					loc	.jbver		; VUExxx defined in VUE.INF
+   262	000137	0 001 00 000162 		Byte (3) vuewho (9) vuever (6) vuemin (18) vueedt
+   263	400000'					reloc
+   264
+   265			000001			Ftcommand=1		; Expect RESCAN capability
+   266
+   267					IFNDEF Ftdebug,<Ftdebug==-1>	; Allow (VUE) & (YEUX) as well as (SYS)
+   268
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 3
+VIEW	MAC	24-Aug-71 17:07		Entry Points - Internal / External
+
+   269					Subttl	Entry Points - Internal / External
+   270
+   271						entry fef,fen,clulin,clupos,autblk,flush,silent,quiet
+   272						entry scrsze,screen,curline,dskbuf,filblk,ppn,cucl,defdsk,base
+   273						entry comchar,repeat,linesz
+   274						entry readch,readcc,nowait,mcrdef,mcrptr
+   275						entry p,lowend,lowptr,hbot,hptr,hend,bfrpag,bfrlin
+   276						entry ttytyp,sst,rst,mark,maxss,muncho,munchi,ocline,scrmod,muline
+   277						entry altptr,ttyidle,reset,dskbfh,modpos
+   278						entry putch,putstr,putoct,putnum,putrdx,putbcd,putpad,flubfr
+   279						entry wrtoct,wrtnum,writestring,writeloss,updatecursor
+   280						entry cmdlvl,qreg,dorescan,submod,vuetyp
+   281						entry physpos,physlin,tabsize,distbl,bfblk1,bfblk2,scroff,scrlen
+   282						entry relcor,coresize,movbuf,corecheck,rsrchr,rsrptr,rsrstk
+   283						entry dmpbfr,dmpbsz,pcopy,dmpin,dmpout
+   284						entry ttype,tspeed,gettty,getwid,getlen,getaun,getppn,mail,getjob
+   285						entry moveforward,moveback,quit,modblk
+   286						entry eolbreak,eolchxr,eoltype,fmtbreak,fmtchxr
+   287						entry whtbreak,whtchxr,whitespace,wbreak
+   288						entry pbreak,blankline,findbreak,apbreak,blankprev
+   289						entry getchx,ftp,therep
+   290
+   291					external popio,ctrlxr,ctrlxv,uctrlo,read,metaprefix,xprefix,cmdstk,repstk
+   292					external escvalue,delvalue,sosmod,leftmargin,goxy,toprompt,caseok
+   293
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 4
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	TYMCOM-X / TOPS-10 Definitions 
+
+   294					Subttl	VUEMAC	TYMCOM-X / TOPS-10 Definitions 
+   295
+   296		042000	000000		Opdef	Auxcal	[042000,,0]	; Terminal / Aux Circuit calls
+   297		047000	777752		Opdef	Setmod	[Calli -26]	; Used to set status/mode of line
+   298		047000	777715		Opdef	Putlsa	[Calli -63]	; Writes a Stream Accounting Record
+   299		254000	000000		Opdef	Pjrst	[Jrst]		; Comment is Jrst to POPJ routine
+   300
+   301			000000		.Axi8c==0	; Input character image and wait
+   302			000001		.Axi8s==1	; Input character image and skip
+   303			000004		.Axo8i==4	; Output character image immediate
+   304			000005		.Axptr==5	; Output string using byte pointer
+   305			000010		.Axsic==10	; skip if character
+   306			000012		.Axsyb==12	; send yellow ball (Tymnet)
+   307			000016		.Axobr==16	; Read Output baud rate code
+   308			000027		.Axwid==27	; Terminal Width
+   309			000045		.Axics==45	; input character and skip
+   310			000052		.Axost==52	; Outstr to Aux port
+   311			000055		.Axrvx==55	; reverse ^S/^Q enable
+   312			000064		.Axcfs==64	; Setmod for Aux port
+   313			000100		.Axttp==100	; Read terminal type
+   314
+   315			000400		io.nee==1b27	; no-escape-echo bit
+   316			000200		io.nec==1b28	; no-echo bit
+   317			000100		io.fcs==1b29	; full-character-set bit
+   318
+   319			000010		.ioimg==10	; image mode io
+   320			000014		.iobin==14	; binary
+   321
+   322		777777	777753		.Gtfpn==-25	; Frame PPN
+   323		777777	777755		.Gtaun==-23	; Acct User Number (ppn)
+   324		777777	777760		.Gtlic==-20	; User license
+   325			000002		.Gtppn==2	; Gfd'd PPN
+   326			000003		.Gtnam==3	; Name!
+   327			000006		.Gtprv==6	; Privilage word
+   328
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 5
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Main subroutines - Shareable @ 400000
+
+   329					Subttl	VUEMAC	Main subroutines - Shareable @ 400000
+   330					Subttl	VUEMAC	Reset
+   331
+   332					;Reset	- Reset i/o and do one-time only checks with PUTLSA & JP.TYM
+   333					;
+   334					;	Pushj	s,Reset		RESET()
+   335					;	 <Only Return>
+   336					;
+   337	400000'	047 00 0 00 000000 	Reset:	Calli	0		; Reset the world!
+   338	400001'	260 00 0 00 401106'		Pushj	s,Getprv	; Get user privs.
+   339	400002'	202 03 0 00 004754'		Movem	v,Usrprv	; Store them.
+   340	400003'	260 00 0 00 401104'		Pushj	s,Getlic	; Get user license.
+   341	400004'	202 03 0 00 004755'		Movem	v,Usrlic	; Store them.
+   342	400005'	260 00 0 00 401102'		Pushj	s,Getnam	; Get program name.
+   343	400006'	202 03 0 00 004756'		Movem	v,Usrnam	; Store it.
+   344	400007'	260 00 0 00 401110'		Pushj	s,GetFPN	; Get Frame PPN (where program run from).
+   345	400010'	202 03 0 00 004760'		Movem	v,UsrFPN	; Store it.
+   346	400011'	260 00 0 00 401115'		Pushj	s,Getppn	; Get the GFD'd PPN
+   347	400012'	202 03 0 00 004564'		Movem	v,UsrPPN	; Store it.
+   348	400013'	260 00 0 00 401111'		Pushj	s,Getaun	; Get the Logged in PPN too.
+   349	400014'	202 03 0 00 004757'		Movem	v,Usraun	; Store it.
+   350	400015'	332 00 0 00 004760'		Skipe	UsrFPN		; See if FPN is good.
+   351	400016'	254 00 0 00 400021'		  Jrst	BadFPN		; Yes, continue.
+   352	400017'	202 16 0 00 004756'		Movem	16,Usrnam	; This guy is either an EXE file or...
+   353	400020'	202 17 0 00 004760'		Movem	17,UsrFPN	;  he's been meddling.  Scrunch!!!
+   354
+   355	400021'	634 05 0 00 000005 	BadFPN:	Tdza	b,b		; Start fresh.
+   356	400022'	660 05 0 00 777734 		 Tro	b,-44		; Make sure this is done right. (NEVER!)
+   357	400023'	205 04 0 00 656444 		Movsi	a,'UTD'		; For file hackers!!! this is VUE - 10101
+   358	400024'	661 05 0 00 010101 		Tlo	b,10101		; Here is the 10101 to add
+   359	400025'	273 04 0 00 000005 		Addb	a,b		; ...
+   360					ifn Ftdebug,<
+   361	400026'	332 00 0 00 000074 		Skipe	.Jbddt		; If DDT is loaded
+   362	400027'	200 04 0 00 401651'		  Move	a,[sixbit 'dvue'];  then allow a different name!
+   363					    > ; End ifn Ftdebug
+   364	400030'	312 04 0 00 004756'		Came	a,Usrnam	; Do they still match?
+   365	400031'	254 00 0 00 400060'		  Jrst	Tattle		; No-- Tell someone!
+   366	400032'	205 05 0 00 000001 		Movsi	b,1		; Build these too!
+   367	400033'	241 05 0 00 000024 		Rot	b,24		; Put the 4 into position
+   368	400034'	661 05 0 00 000001 		Tlo	b,1		; Set bits for 1,,4
+   369	400035'	316 05 0 00 004760'		CAMN	b,UsrFPN	; is it a legal copy?
+   370	400036'	254 00 0 00 400155'		  Jrst	Rested		; Seems ok -- DO next step
+   371	400037'	640 05 0 00 000004 		Trc	b,4		; Clear the 4
+   372	400040'	660 05 0 00 315372 		Tro	b,315372	; Set in UUN for (FTSYS)
+   373	400041'	316 05 0 00 004760'		Camn	B,UsrFPN	; Compare
+   374	400042'	254 00 0 00 400155'		  Jrst	Rested		; Seems ok -- DO next step
+   375					Ifn Ftdebug,<
+   376	400043'	200 04 0 00 004760'		Move	a,Usrfpn	; Need to get this for later
+   377	400044'	205 05 0 00 006777 		Movsi	b,6777		; get first part 3,3774...shifted some
+   378	400045'	271 05 0 00 022000 		Addi	b,022000	; now add next part
+   379	400046'	241 04 0 00 000012 		Rot	a,12		; shift test part
+   380	400047'	312 04 0 00 000005 		CAME	a,b		; DEBUG COPY?
+   381	400050'	316 04 0 00 401652'		CAMN	a,[6777,,024000]; NEW VERSION?
+   382	400051'	254 00 0 00 400155'		  Jrst	Rested		; Seems ok -- DO next step
+   383	400052'	241 04 0 00 777766 		Rot	a,-12		; No, So move everything back!
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 5-1
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Reset
+
+   384						> ; End Ifn Ftdebug
+   385
+   386	400053'	634 06 0 00 000006 		Tdza	c,c		; Start fresh.
+   387	400054'	660 05 0 00 777734 		 Tro	b,-44		; Make sure this is done right. (NEVER!)
+   388	400055'	205 05 0 00 656444 		Movsi	b,'UTD'		; For file hackers!!! this is VUE - 10101
+   389	400056'	661 06 0 00 010101 		Tlo	c,10101		; Here's the 10101 to add (left half)
+   390	400057'	273 06 0 00 000005 		Addb	c,b
+   391	400060'	047 05 0 00 777715 	Tattle:	PUTLSA	b,		; make a stream record
+   392	400061'	255 00 0 00 000000 		 JFCL
+   393	400062'	400 06 0 00 000000 		Setz	c,		; Need some scratch
+   394	400063'	200 03 0 00 004755'		Move	v,Usrlic	; First check license
+   395	400064'	602 03 0 00 000002 		Trne	v,(2b17)	; Does he have WF?
+   396	400065'	254 00 0 00 400100'		  Jrst	Delf		; Yes-- No need to check further
+   397	400066'	200 03 0 00 004760'		Move	v,UsrFPN	; Get the frame ppn
+   398	400067'	316 03 0 00 004564'		Camn	v,UsrPPN	; Does it match? (GFD'd PPN)
+   399	400070'	660 06 0 00 000100 		  Tro	c,100		;  Yes!! Only needs Owner access
+   400	400071'	620 03 0 00 777777 		Trz	v,-1		; Clear PN
+   401	400072'	510 05 0 00 004564'		Hllz	b,Usrppn	; Get Project part
+   402	400073'	316 03 0 00 000005 		Camn	v,b		; ... Do they match?
+   403	400074'	660 06 0 00 000010 		  Tro	c,10		;  Yes!! Only needs Project access
+   404	400075'	200 03 0 00 004755'		Move	v,Usrlic	; See if he has WP set?
+   405	400076'	602 03 0 00 000001 		Trne	v,(1b17)	; Either that or WA... both ok.
+   406	400077'	620 06 0 00 000010 		  Trz	c,10		;   Seems to - Clear project bit
+   407	400100'	200 03 0 00 000006 	Delf:	move	v,c		; Now, copy our flag.
+   408
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 6
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Reset
+
+   409
+   410
+   411						OPEN	[ 17
+   412							  sixbit "DSK"
+   413	400101'	050 00 0 00 401653'			  xwd 0,0]
+   414	400102'	254 00 0 00 400155'		  Jrst	Rested		; Can't cope -- DO next step
+   415	400103'	336 00 0 00 004756'		Skipn	Usrnam		; Get program name.
+   416	400104'	254 00 0 00 400154'		  Jrst	cantell		; Can't cope -- Release Disk.
+   417						MOVE	d,[point 18,[sixbit /LOWSHR/
+   418								     sixbit /HGHSAV/
+   419								     sixbit /SWREXE/
+   420	400105'	200 07 0 00 401662'				     sixbit /XPN   /]]
+   421	400106'	200 13 0 00 004760'	Vuecpy:	Move	e+3,UsrFPN	; Reset the FPN (remembered from above)
+   422	400107'	200 10 0 00 004756'		Move	e,Usrnam	; Save the name in the AC's LOOKUP block
+   423	400110'	134 06 0 00 000007 		Ildb	c,d		; Get one of LOW SHR HGH SAV SWR 0
+   424	400111'	322 06 0 00 400154'		 Jumpe	c,cantell	; All done?
+   425	400112'	206 06 0 00 000011 		Movsm	c,e+1		; Not yet... store extension to try.
+   426	400113'	402 00 0 00 000012 		Setzm	e+2		; Finish setup...
+   427	400114'	076 00 0 00 000010 		LOOKUP	e		; Look it up in his directory [FPN]
+   428	400115'	254 00 0 00 400106'		  Jrst	Vuecpy		;  Ignore errors - Just go to the next one.
+   429	400116'	322 03 0 00 400150'		Jumpe	v,Okdelf	; Ok to delete if WF or WP... set, so go!
+   430	400117'	135 06 0 00 401663'		ldb	c,[point 3,e+2,2]; get user protection
+   431	400120'	602 03 0 00 000100 		Trne	v,100		; If same user, then...
+   432	400121'	322 06 0 00 400150'		 jumpe	c,Okdelf	;  Let him delete it if possible
+   433	400122'	602 03 0 00 000100 		Trne	v,100		;  Else ... he must rename it first.
+   434	400123'	254 00 0 00 400137'		 jrst	Okrenf		;  ...
+   435	400124'	135 06 0 00 401664'		ldb	c,[point 3,e+2,5]; get project protection
+   436	400125'	602 03 0 00 000010 		Trne	v,10		; If same project, then...
+   437	400126'	322 06 0 00 400150'		 jumpe	c,Okdelf	;  Let him delete it if possible
+   438	400127'	602 03 0 00 000010 		Trne	v,10		;  Else ... he must rename it first.
+   439	400130'	301 06 0 00 000002 		cail	c,2		;  ... IF that is possible!
+   440	400131'	304 00 0 00 000000 		 caia			;  no - no - no!
+   441	400132'	254 00 0 00 400137'		  jrst	Okrenf		;  ...  Ok!
+   442	400133'	135 06 0 00 401665'		ldb	c,[point 3,e+2,8]; get anyone protection
+   443	400134'	322 06 0 00 400150'		 jumpe	c,Okdelf	;  Let him delete it if possible
+   444	400135'	301 06 0 00 000002 		cail	c,2		;  Else ... he must rename it first.
+   445	400136'	254 00 0 00 400106'		  jrst	Vuecpy		;  ...  Can't!!! so try next file!
+   446	400137'	201 06 0 00 000017 	Okrenf:	movei	c,00017		;  Protection 0, mode 17
+   447	400140'	137 06 0 00 401666'		Dpb	c,[point 13,e+2,12]; store it for the rename.
+   448	400141'	055 00 0 00 000010 		Rename	e		; Change the protection
+   449	400142'	254 00 0 00 400106'		  jrst	Vuecpy		; If error -- give up & try next one
+   450	400143'	402 00 0 00 000012 		setzm	e+2		; Clear this field
+   451	400144'	200 13 0 00 004760'		move	e+3,UsrFPN	; Restore the directory name
+   452	400145'	513 00 0 00 000011 		hllzs	e+1		; Clear creation date and stuff
+   453	400146'	076 00 0 00 000010 		Lookup	e		; Do a lookup again
+   454	400147'	254 00 0 00 400106'		  jrst	Vuecpy		; Not there? -- Give up!
+   455	400150'	402 00 0 00 000010 	Okdelf:	SETZM	e		; Clear name
+   456	400151'	055 00 0 00 000010 		RENAME	e		; Delete it
+   457	400152'	255 00 0 00 000000 		 Jfcl			;  Ignore errors
+   458	400153'	254 00 0 00 400106'		Jrst	Vuecpy		; Loop till all stolen files gone
+   459
+   460	400154'	071 00 0 00 000000 	Cantell: RELEAS			; Release the channel (DSK)
+   461	400155'	201 04 0 00 040000 	Rested:	movei	a,1b21		; JP.TYM
+   462	400156'	612 04 0 00 004754'		tdne	a,Usrprv	; Does the user have license?
+   463	400157'	254 00 0 00 400313'		  jrst	Noecho		;   Yes -- Turn off echo & GO!
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 6-1
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Reset
+
+   464	400160'	242 04 0 00 777771 		lsh	a,-7		; Shift word over and decipher the mode!
+   465	400161'	405 04 0 00 000003 		andi	a,3		; Got it, now we have them run something else
+   466						move	a,[sixbit /EDIT10/	; PDP-10 .JPMPD
+   467							   sixbit /EDITOR/	; XEXEC  .JPMXE
+   468							   sixbit /EDITOR/	; XEXECJ .JPMXJ
+   469	400162'	200 04 0 04 401667'			   sixbit /EDITOR/](a)	; SUDS   .JPMSU
+   470									; Fall into code to RUN (SYS) ((a))
+   471
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 7
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Runccl	Cucl	RunRPG	Runcca
+
+   472					Subttl	VUEMAC	Runccl	Cucl	RunRPG	Runcca
+   473
+   474					;Runccl	- Perform a "RUN" at start address + 1 for SYS:(a)
+   475					;
+   476					;	Move	a,[sixbit /program/]
+   477					;	Jrst	Runcca
+   478					;	  <never returns>
+   479					;
+   480	400163'	200 05 0 00 401673'	Runccl:	Move	b,[Xwd RPGBLK,e]; Remember this is from SYS:
+   481	400164'	251 05 0 00 000015 		Blt	b,e+5		; Copy defaults from RPG
+   482	400165'	202 04 0 00 000011 		Movem	a,e+1		; Now store the name
+   483	400166'	254 00 0 00 400172'		Jrst	Runcca		; And run it at the CCL point
+   484
+   485					;Cucl	- Run CCL program at starting addr + 1
+   486					;RunRPG	- Run (SYS)RPG at atarting address + 1 to do the last RPG thing
+   487					;
+   488					;	Jrst	RunRPG		Cucl()  or  Runrpg()
+   489					;	  <never returns>
+   490					;
+   491	400167'	260 00 0 00 400323'	cucl:	Pushj	s,Fen		; Turn off the terminal
+   492	400170'	200 05 0 00 401673'	RunRPG:	Move	b,[Xwd RPGBLK,e]; We are running RPG right?
+   493	400171'	251 05 0 00 000015 		Blt	b,e+5		; Copy defaults from RPGBLK
+   494	400172'	205 04 0 00 000001 	Runcca:	movsi	a,1		; Start offset = 1
+   495	400173'	541 04 0 00 000010 		hrri	a,e		; Setup address of block
+   496	400174'	047 04 0 00 000035 		run	a,		; Bye!
+   497	400175'	254 04 0 00 400175'		  halt	.
+   498
+   499	400176'	63 71 63 00 00 00 	RPGBLK:	sixbit/SYS/
+   500	400177'	62 60 47 00 00 00 		sixbit/RPG/
+   501	400200'	000000	000000			0
+   502	400201'	000000	000000			0
+   503	400202'	000001	000004			1,,4
+   504	400203'	000000	000000			0
+   505
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 8
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Relcor	Coresize
+
+   506					Subttl	VUEMAC	Relcor	Coresize
+   507
+   508					;Relcor	- calculate for 500 extra characters above hend and release
+   509					;	  any memory assigned above that - *** watch Mapped pages ***
+   510					;
+   511					;	Push	s,[N]			Relcor(N)
+   512					;	Pushj	s,Relcor
+   513					;	  <only return>				or ERROR!EXIT
+   514					;
+   515	400204'	200 03 0 00 004551'	relcor:	move	v,hend			; Get Top of high buffer
+   516	400205'	231 03 0 00 000005 		idivi	v,5			; Convert to an address
+   517	400206'	271 03 0 00 000100 		addi	v,100			; Add room for 500 more chars
+   518	400207'	270 03 0 00 004547'		add	v,p			; highest address used by vue.
+   519	400210'	202 03 0 00 000121 		movem	v,.Jbff			; Set jobff
+   520	400211'	435 03 0 00 000777 		ori	v,777
+   521	400212'	202 03 0 00 000044 		movem	v,.Jbrel		; Set this number too.
+   522	400213'	047 03 0 00 000011 		calli	v,11			; Get the core
+   523	400214'	260 00 0 00 401647'		  pushj	s,E$$NEC		; Give error message and exit
+   524	400215'	200 03 0 00 000121 		move	v,.Jbff			; Else return .Jbff
+   525	400216'	263 00 0 00 000000 		popj	s,
+   526
+   527					;Coresize - Increase core by N words (if necessary?)
+   528					;
+   529					;	Push	s,[N]			Coresize(N)
+   530					;	Pushj	s,Coresize
+   531					;	  <only return>				or ERROR!EXIT
+   532					;					v contains (.JBFF)
+   533					;
+   534	400217'				Coresize:
+   535	400217'	200 04 0 00 000000 		move	a,s			; Get the argument
+   536	400220'	200 04 0 04 777777 		move	a,-1(a)			; Get requested length
+   537	400221'	200 03 0 00 000121 		move	v,.Jbff			; Save Next free for return
+   538	400222'	272 04 0 00 000121 		addm	a,.Jbff			; Increment .JBFF and .JBREL
+   539	400223'	273 04 0 00 000044 		addb	a,.Jbrel		;  by the requested size
+   540	400224'	047 04 0 00 000011 		calli	a,11			; Ask for it
+   541	400225'	260 00 0 00 401647'		  pushj	s,E$$NEC		;  Nope - Give error & exit
+   542	400226'	263 00 0 00 000000 		popj	s,
+   543
+   544
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 9
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	MovBuf	Corecheck
+
+   545					Subttl	VUEMAC	MovBuf	Corecheck
+   546
+   547					;MovBuf - Routine to move buffer forward 1 page
+   548					;
+   549					;	pushj	s,Movbuf	or	MovBuf();
+   550					;	 <only return>
+   551					;
+   552	400227'	261 00 0 00 401674'	MovBuf:	push	s,[1000]		; Ask for another page
+   553	400230'	260 00 0 00 400217'		pushj	s,Coresize		;  of buffer memory
+   554	400231'	262 00 0 00 000003 		pop	s,v			; Adjust the stack
+   555	400232'	272 03 0 00 004547'		addm	v,P			; Increment buffer base address
+   556	400233'	272 03 0 00 004556'		addm	v,LOWPTR		; Increment the back-pointer
+   557	400234'	272 03 0 00 004553'		addm	v,HPTR			; Increment the high pointer
+   558	400235'	200 03 0 00 004551'		move	v,HEND			; Setup end-pointer for rev-BLT
+   559	400236'	231 03 0 00 000005 		idivi	v,5			; Convert to words
+   560	400237'	201 01 0 03 000001 		movei	t,1(v)			;  and add 1 for zero base
+   561	400240'	270 03 0 00 004547'		add	v,P			; Set new "real" top of buffer
+   562	400241'	254 00 0 00 400264'		pjrst	revblt			; And return through BLT (below)
+   563
+   564
+   565					;Corecheck - 	Check to see if there is room in the gap
+   566					;		if so then return, otherwise expand memory
+   567					;
+   568					;	Pushj	s,Corecheck		Corecheck()
+   569					;	  <only return>
+   570					;
+   571	400242'				Corecheck:
+   572	400242'	200 03 0 00 004552'		move	v,HBOT			; Get high bottom
+   573	400243'	274 03 0 00 004554'		sub	v,LOWEND		;  and compare to see
+   574	400244'	301 03 0 00 000020 		cail	v,20			;  if we need to expand
+   575	400245'	263 00 0 00 000000 		  popj	s,			; Enough for now?  Return
+   576	400246'	261 00 0 00 401674'		push	s,[1000]		; Ask for another page
+   577	400247'	260 00 0 00 400217'		pushj	s,Coresize		;  of buffer memory
+   578	400250'	262 00 0 00 000003 		pop	s,v			; Adjust the character
+   579	400251'	272 03 0 00 004553'		addm	v,HPTR			;  ptr to the high end
+   580	400252'	201 03 0 00 005000 		movei	v,5000			; Adjust the pointers
+   581	400253'	272 03 0 00 004552'		addm	v,HBOT			;  for the high end and
+   582	400254'	273 03 0 00 004551'		addb	v,HEND			;  calculate the number of
+   583	400255'	274 03 0 00 004552'		sub	v,HBOT			;  characters above the gap
+   584	400256'	322 03 0 00 400322'		 jumpe	v,Cpopj			; None?  then just return
+   585	400257'	231 03 0 00 000005 		idivi	v,5			; Convert to words
+   586	400260'	201 01 0 03 000001 		movei	t,1(v)			;  and add 1 for zero base
+   587	400261'	200 03 0 00 004551'		move	v,HEND			; Setup end-pointer for
+   588	400262'	231 03 0 00 000005 		idivi	v,5			;  reverse BLT of data
+   589	400263'	270 03 0 00 004547'		add	v,P			; From "real" top of buffer
+   590	400264'	200 04 0 03 777000 	revblt:	move	a,-1000(v)		; Get a word
+   591	400265'	202 04 0 03 000000 		movem	a,(v)			; Put a word
+   592	400266'	360 03 0 00 000000 		soj	v,			; Point at "next" previous
+   593	400267'	367 01 0 00 400264'		sojg	t,revblt		; Loop till done
+   594	400270'	263 00 0 00 000000 		popj	s,			; Return
+   595
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 10
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Fef	Fen	TtyIdle
+
+   596					Subttl	VUEMAC	Fef	Fen	TtyIdle
+   597
+   598					;Fef	- Save Characteristics & Setup Terminal
+   599					;
+   600					;	Pushj	s,FEF		FEF()
+   601					;	  <only return>
+   602					;
+   603	400271'	474 04 0 00 000000 	fef:	seto	a,		; Get the tty characteristics
+   604	400272'	051 06 0 00 000004 		getlch	a		; Of your own port
+   605	400273'	202 04 0 00 004766'		movem	a,tymtty	; Remember them
+   606	400274'	661 04 0 00 000220 		tlo	a,220		; Magic bits NFC!NCM
+   607	400275'	051 07 0 00 000004 		setlch	a		; Now setup special ones
+   608	400276'	402 00 0 00 004767'		setzm	inirvx		; clear ^S/^Q flag
+   609	400277'	561 04 0 00 000004 		hrroi	a,.Axo8i	; Output immediate character
+   610	400300'	042 04 0 00 000000 		Auxcal	a,0		; A null!
+   611	400301'	561 04 0 00 000012 		hrroi	a,.AxSYB	; then follow it
+   612	400302'	042 04 0 00 000000 		Auxcal	a,		;   by a yellow ball
+   613	400303'	200 04 0 00 401675'		move	a,[Xwd 41,5]	;   wait for an orange ball
+   614	400304'	047 04 0 00 000072 		Hiber	a,		;   for up to 5 seconds.
+   615	400305'	255 00 0 00 000000 		  jfcl			;   Ignore errors.
+   616	400306'	561 04 0 00 000055 		hrroi	a,.Axrvx	; then turn off backpressure
+   617	400307'	042 04 0 00 004767'		Auxcal	a,inirvx	;   capability via ^S/^Q
+   618	400310'	476 00 0 00 004753'		Setom	tspeed		; Get the terminal speed
+   619	400311'	561 04 0 00 000016 		hrroi	a,.Axobr	; ... for output anyway.
+   620	400312'	042 04 0 00 004753'		Auxcal	a,tspeed	;  .. save it for later
+   621	400313'	561 04 0 00 000064 	Noecho:	Hrroi	a,.Axcfs	; Now setup port status
+   622	400314'	042 04 0 00 000714 		Auxcal	a,io.nee!io.nec!io.fcs!.iobin
+   623	400315'	561 04 0 00 000012 		hrroi	a,.AxSYB	; then follow it
+   624	400316'	042 04 0 00 000000 		Auxcal	a,		;   by a yellow ball
+   625	400317'	200 04 0 00 401675'		move	a,[Xwd 41,5]	;   wait for an orange ball
+   626	400320'	047 04 0 00 000072 		Hiber	a,		;   for up to 5 seconds.
+   627	400321'	255 00 0 00 000000 		  jfcl			;   Ignore errors.
+   628	400322'	263 00 0 00 000000 	Cpopj:	Popj	s,		; Then Return
+   629
+   630					;Fen	- Restore terminal characteristics
+   631					;
+   632					;	Pushj	s,Fen		FEN()
+   633					;	  <only return>
+   634					;
+   635	400323'	260 00 0 00 400563'	fen:	pushj	s,flubfr	;make sure everything is gone
+   636	400324'	561 04 0 00 000012 		hrroi	a,.AxSYB	; then follow it
+   637	400325'	042 04 0 00 000000 		Auxcal	a,		;   by a yellow ball
+   638	400326'	200 04 0 00 401675'		move	a,[Xwd 41,5]	;   wait for an orange ball
+   639	400327'	047 04 0 00 000072 		Hiber	a,		;   for up to 5 seconds.
+   640	400330'	255 00 0 00 000000 		  jfcl			;   Ignore errors.
+   641	400331'	200 04 0 00 004766'		move	a,tymtty	; Remember these characteristics?
+   642	400332'	051 07 0 00 000004 		setlch	a		; Now set them back
+   643	400333'	561 04 0 00 000055 		hrroi	a,.Axrvx	; ^S/^Q
+   644	400334'	261 00 0 00 004767'		push	s,inirvx	; Make sure this doesn't get clobberred
+   645	400335'	042 04 0 00 004767'		Auxcal	a,inirvx	; restore it
+   646	400336'	262 00 0 00 004767'		pop	s,inirvx	;  ...
+   647	400337'	263 00 0 00 000000 		Popj	s,		; Then return
+   648
+   649					;Ttyidle - Return True(1) or False(0) depending upon pending input
+   650					;
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 10-1
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Fef	Fen	TtyIdle
+
+   651					;	Pushj	s,TtyIdle	... Ttyidle() ...
+   652					;	  <only return>				v == 0 or 1
+   653					;	
+   654	400340'				ttyidle:
+   655	400340'	561 03 0 00 000010 		hrroi	v,.Axsic	; Equiv of Skpinc
+   656	400341'	042 03 0 00 000000 		Auxcal	v,		;  to see if anything there
+   657	400342'				Ret1:
+   658	400342'	334 03 0 00 401676'	ifn v,<	 skipa	v,[1]>		;    1 == True
+   659					ife v,<	 tdza	v,v		; Simulate "skipa v,[1]"
+   660						 caia
+   661						 aosa	v>
+   662	400343'	400 03 0 00 000000 	Ret0:	 setz	v,		;    0 == False
+   663	400344'	263 00 0 00 000000 		popj	s,
+   664
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 11
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Readcc/Readch - reads a char and returns it in v
+
+   665					Subttl	VUEMAC	Readcc/Readch - reads a char and returns it in v
+   666
+   667					;Readch	- Read a character from the current input source into V
+   668					;
+   669					;	Pushj	s,Readch	char _ Readch()
+   670					;	  <only return>				v _ char
+   671					;
+   672	400345'	476 00 0 00 004763'	readcc:	setom	PreCmd		; Possibly a prefix-ed command
+   673	400346'	260 00 0 00 400563'	readch:	pushj	s,flubfr	; Everyone wants this, so do it!
+   674	400347'	200 04 0 00 004537'	readnx:	move	a,cmdlvl	; The stack index (0=TTY,-2=FILE)
+   675	400350'	336 03 0 04 000000*		skipn	v,cmdstk(a) 	; Do we have a real pointer?
+   676	400351'	254 00 0 00 400420'		  jrst	usetty		;  No -- Use TTY
+   677	400352'	554 03 0 00 000003 		hlrz	v,v		; Copy left part
+   678	400353'	306 03 0 00 777777 		cain	v,-1		; If -1,,-n (-n) then it's a file
+   679	400354'	254 00 0 00 400433'		  jrst	usefil		; Yes -- From a file
+   680	400355'	134 03 0 04 400350*		ildb	v,cmdstk(a) 	;  No -- Get a character
+   681	400356'	336 00 0 00 004763'	readcm:	skipn	PreCmd		; Is it a command character?
+   682	400357'	254 00 0 00 400403'		  jrst	readdn		;  No -- Pass it on (For now!)
+   683	400360'	312 03 0 00 000000*		came	v,MetaPrefix	; Is it a Meta?
+   684	400361'	254 00 0 00 400366'		  jrst	readc2		; No -- continue
+   685	400362'	332 00 0 00 004764'		skipe	PreMeta		; Previous Meta?
+   686	400363'	254 00 0 00 400374'		  jrst	readpm		; Yes -- pass meta
+   687	400364'	476 00 0 00 004764'		setom	PreMeta		; Set meta-flag
+   688	400365'	254 00 0 00 400347'		jrst	readnx		; Go for another char
+   689	400366'	312 03 0 00 000000*	readc2:	came	v,XPrefix	; Is it eXtend-Prefix
+   690	400367'	254 00 0 00 400374'		  jrst	readc4		; No -- continue
+   691	400370'	332 00 0 00 004765'		skipe	PreeXt		; Previous eXtend
+   692	400371'	254 00 0 00 400374'		  jrst	readpe		; Yes -- pass extend
+   693	400372'	476 00 0 00 004765'		setom	PreeXt		; Set extend-flag
+   694	400373'	254 00 0 00 400347'		jrst	readnx		; Go for another char
+   695	400374'				readpm:		; Same for now
+   696	400374'				readpe:		; Same for now
+   697	400374'	332 00 0 00 004764'	readc4:	skipe	PreMeta		; Is meta set?
+   698	400375'	271 03 0 00 000200 		  addi	v,200		; Yes -- increment value
+   699	400376'	332 00 0 00 004765'		skipe	PreeXt		; Is eXtend set?
+   700	400377'	271 03 0 00 000400 		  addi	v,400		; Yes -- increment value
+   701	400400'	402 00 0 00 004763'		setzm	PreCmd		; Clear command flag --Always--
+   702	400401'	402 00 0 00 004764'		setzm	PreMeta		; Clear prefixes for next char
+   703	400402'	402 00 0 00 004765'		setzm	PreeXt		;  so there is no confusion
+   704	400403'	336 00 0 00 001507'	readdn:	skipn	mcrdef		; Are we in define mode?
+   705	400404'	263 00 0 00 000000 		  popj	s, 		;  No! -- Just return
+   706	400405'	306 03 0 00 000007 		cain	v,7		; (For now, hard-code Bell!)
+   707	400406'	254 00 0 00 400411'		  jrst	readdd		; Yes! -- Done defining
+   708	400407'	136 03 0 00 001510'		idpb	v,mcrptr	; No! -- insert char in buffer
+   709	400410'	263 00 0 00 000000 		popj	s,		; and return.
+   710	400411'	402 00 0 00 001507'	readdd:	setzm	mcrdef		; Clear define mode
+   711	400412'	201 03 0 00 000451 		movei	v,400+")"	; Get terminator
+   712	400413'	136 03 0 00 001510'		idpb	v,mcrptr	; deposit it
+   713	400414'	261 00 0 00 401705'		push	s,[Exp [Asciz/Finished macro define mode./],^D27]
+   714	400415'	260 00 0 00 000000*		pushj	s,ToPrompt	; print it
+   715	400416'	262 00 0 00 000003 		pop	s,v		; pop stack
+   716	400417'	254 00 0 00 400346'		jrst	readch		; and go for another char
+   717
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 12
+VIEW	MAC	24-Aug-71 17:07		Usetty - Usefil:  Readch sub-functions
+
+   718					Subttl	Usetty - Usefil:  Readch sub-functions
+   719
+   720	400420'	336 00 0 00 004770'	usetty:	skipn	nowait		; See if we're special
+   721	400421'	254 00 0 00 400426'		  jrst	usettc		;  No -- go ahead with it
+   722	400422'	561 04 0 00 000010 		hrroi	a,.Axsic	; Yes -- see if input
+   723	400423'	474 03 0 00 000000 		seto	v,		; Default to "no-input"
+   724	400424'	042 04 0 00 000000 		Auxcal	a,		; Anything ready to read
+   725	400425'	263 00 0 00 000000 		  popj	s,		;  No -- Return v = -1 for nothing here
+   726	400426'	561 04 0 00 000000 	usettc:	hrroi	a,.Axi8c	; Yes -- attempt to read it
+   727	400427'	042 04 0 00 000003 		Auxcal	a,v		; Inchrw equivalent (preserve Image mode)
+   728						  jrst	[movei	v,1
+   729							 sleep	v,
+   730	400430'	254 00 0 00 401707'			 jrst	usettc]	; Loop (waiting for port)
+   731					    ; test & skip if this terminal type wants all 8 bits!!!
+   732	400431'	620 03 0 00 000200 		trz	v,200		; Else zap parity
+   733	400432'	254 00 0 00 400356'		jrst	readcm 		; return (to common return code)
+   734
+   735
+   736	400433'	261 00 0 00 401712'	usefil:	push	s,[4]		; (Using channel 4)
+   737	400434'	260 00 0 00 000000*		pushj	s,read		; Read a char from the file
+   738	400435'	262 00 0 00 000004 		pop	s,a
+   739	400436'	321 03 0 00 400463'		jumpl	v,popout	; Branch on EOF
+   740	400437'	322 03 0 00 400433'		jumpe	v,usefil	; In files...
+   741	400440'	302 03 0 00 000015 		caie	v,15		;   ignore NULL,
+   742	400441'	306 03 0 00 000012 		cain	v,12		;       CR and LF
+   743	400442'	254 00 0 00 400433'		  jrst	usefil		;
+   744	400443'	302 03 0 00 000077 		caie	v,"?"		; Check for <control escape>
+   745	400444'	254 00 0 00 400356'		  jrst	readcm		;   No, -- return (through common code)
+   746	400445'	261 00 0 00 401712'	usefi1:	push	s,[4]		; Yes --- (Use channel 4)
+   747	400446'	260 00 0 00 400434*		pushj	s,read		; Read another character
+   748	400447'	262 00 0 00 000004 		pop	s,a
+   749	400450'	321 03 0 00 400463'		jumpl	v,popout	; Branch on EOF
+   750	400451'	322 03 0 00 400445'		jumpe	v,usefi1	; In files... always ignore NULL
+   751					;	caie	v,15		;   But here give a
+   752					;	cain	v,12		;       CR and LF
+   753					;	  jrst	fromfx		;   Cause an error!!!
+   754	400452'	306 03 0 00 000077 		cain	v,"?"		; Our <control escape>?
+   755	400453'	254 00 0 00 400356'		  jrst	readcm		;  Yes -- Return (through common code)
+   756	400454'	301 03 0 00 000141 		cail	v,"a"		; Case map all to upper
+   757	400455'	303 03 0 00 000172 		caile	v,"z"		; ... only alpha for now
+   758	400456'	304 00 0 00 000000 		  caia			; No change, skip
+   759	400457'	201 03 0 03 777740 		movei	v,-40(v)	; Map them -- UPPER CASE
+   760	400460'	201 03 0 03 777700 		movei	v,-100(v)	; Map them -- CONTROL CHARACTERS
+   761	400461'	331 00 0 00 000003 		skipl	v		;  Check if legal?
+   762	400462'	254 00 0 00 400356'		  jrst	readcm		;   Yes -- Return (through common code)
+   763
+   764	400463'	260 00 0 00 000000*	popout:	pushj	s,popio		; EOF or illegal character
+   765	400464'	254 00 0 00 400346'		jrst	readch		; Now continue?
+   766
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 13
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Munchi
+
+   767					Subttl	VUEMAC	Munchi
+   768
+   769					;MUNCHI - Routine to "munch" the input file by ignoring nulls and LF's
+   770					;	  expects to find the current byte pointer in lowptr
+   771					;
+   772					;	Pushj s,Munchi		or	Munchi();
+   773					;	  <only return>
+   774					;
+   775
+   776	400465'	211 06 0 00 000006 	Munchi:	movni	c,6		; Get number of bytes in a line-number
+   777	400466'	201 07 0 00 000001 		movei	d,1		; Get a bit to test for later.
+   778	400467'	200 10 0 00 004554'		move	e,lowend	; Get the pointer position
+   779	400470'	311 10 0 00 004552'	Munchj:	caml	e,hbot		; Are we out of room?
+   780	400471'	260 00 0 00 400242'		  pushj	s,corecheck	;  Yes!  Get more core
+   781	400472'	375 00 0 00 004773'	Munchk:	sosge	dskbfh+2	; Count characters/check buffer
+   782	400473'	254 00 0 00 400511'		  jrst	munchn		; Need another one...
+   783	400474'	133 00 0 00 004772'		ibp	dskbfh+1	; Increment buffer pointer
+   784	400475'	616 07 1 00 004772'		tdnn	d,@dskbfh+1	; Check line-number bit
+   785	400476'	254 00 0 00 400502'		  jrst	munchm		; No! - Skip this stuff
+   786	400477'	272 06 0 00 004773'		addm	c,dskbfh+2	; Decrement the count.
+   787	400500'	350 00 0 00 004772'		aos	dskbfh+1	; Bump the pointer 5 bytes (ascii)
+   788	400501'	133 00 0 00 004772'		ibp	dskbfh+1	; Bump the pointer 1 more byte
+   789	400502'	135 03 0 00 004772'	Munchm:	ldb	v,dskbfh+1	; Get a byte
+   790	400503'	302 03 0 00 000000 		caie	v,0		;  Skip Nulls
+   791	400504'	306 03 0 00 000012 		cain	v,12		;  and LF's
+   792	400505'	254 00 0 00 400472'		  jrst	munchk		;   wherever found!
+   793	400506'	136 03 0 00 004556'		idpb	v,lowptr	; Store it in the right place.
+   794	400507'	350 10 0 00 004554'		aos	e,lowend	; Increment and copy current point
+   795	400510'	254 00 0 00 400470'		jrst	munchj		; Loop for next, checking size.
+   796
+   797	400511'	056 02 0 00 000000 	Munchn:	in	2,		; Get a buffer
+   798	400512'	254 00 0 00 400472'		  jrst	munchk		;   Ok, Got one.
+   799	400513'	263 00 0 00 000000 		popj	s,		; Finished? Assume we are done.
+   800
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 14
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Munchi
+
+   801	400514'	200 06 0 00 000000 	muncho:	move	c,s
+   802	400515'	200 04 0 06 777777 		move	a,-1(c)		;ptr
+   803	400516'	200 05 0 06 777776 		move	b,-2(c)		;length
+   804	400517'	375 00 0 00 000005 	ploop:	sosge	b		; Any characters left?
+   805	400520'	254 00 0 00 400342'		  jrst	ret1		; No!  All done.
+   806	400521'	134 06 0 00 000004 		ildb	c,a		; Get the byte
+   807	400522'	377 00 0 00 004773'	putcc:	sosg	dskbfh+2	; Disk buffer full?
+   808	400523'	254 00 0 00 400531'		  jrst	putbf		;   Yes! Clear it first
+   809	400524'	136 06 0 00 004772'	putc:	idpb	c,dskbfh+1	; Dump char in buffer
+   810	400525'	302 06 0 00 000015 		caie	c,15		; Is it a CR?
+   811	400526'	254 00 0 00 400517'		  jrst	ploop		; No! - Get next character
+   812	400527'	201 06 0 00 000012 		movei	c,12		; Yes! Get a LF
+   813	400530'	254 00 0 00 400522'		jrst	putcc		; See if we can put it out
+   814
+   815	400531'	057 02 0 00 000000 	putbf:	out	2,
+   816	400532'	254 00 0 00 400524'		  jrst	putc		;no errors, go home.
+   817	400533'	254 00 0 00 400343'		jrst	ret0		;write failed.
+   818
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 15
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Quiet	Putch	Putchi	Putchv	Flubfr
+
+   819					Subttl	VUEMAC	Quiet	Putch	Putchi	Putchv	Flubfr
+   820
+   821					;Quiet	- Toggle the state of .SILENT
+   822					;
+   823					;	Pushj	s,Quiet		Quiet()
+   824					;
+   825	400534'	200 03 0 00 004536'	quiet:	Move	v,silent	; Get flag
+   826	400535'	326 03 0 00 400540'		Jumpn	v,quiet0	; If non zero - Make zero
+   827	400536'	476 00 0 00 004536'		Setom	silent		; else make non-zero
+   828	400537'	263 00 0 00 000000 		popj	s,		; Return.
+   829	400540'	402 00 0 00 004536'	quiet0:	Setzm	silent		; Make zero
+   830	400541'	263 00 0 00 000000 		popj	s,		; Return.
+   831
+   832					;Putch	- Output a character (put it into buffer)
+   833					;
+   834					;	Push	s,[char]	Putch(.char)
+   835					;	Pushj	s,Putch
+   836					;	  <only return>
+   837					;
+   838	400542'	200 03 0 00 000000 	putch:	move	v,s		; Get the character
+   839	400543'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+   840	400544'	332 00 0 00 004536'	putchi:	skipe	silent		; If we're being quiet
+   841	400545'	263 00 0 00 000000 		  popj	s,		;   then don't say a word
+   842	400546'	332 00 0 00 001340'	putchv:	skipe	altptr		; Skip (normal) if no alternate pointer
+   843	400547'	254 00 0 00 400561'		  jrst	putalt		;   else deposit into alternate buffer
+   844	400550'	322 03 0 00 400555'		jumpe	v,putchz	; Zero bytes must get special handling.
+   845	400551'	375 00 0 00 001506'		sosge	ttysfd		; Any room left?
+   846	400552'	260 00 0 00 400563'		  pushj	s,flubfr	;   No -- Flush the buffer
+   847	400553'	136 03 0 00 001341'		idpb	v,bufptr	; Put it into the buffer
+   848	400554'	263 00 0 00 000000 		popj	s,		; and Return
+   849
+   850	400555'	260 00 0 00 400563'	putchz:	pushj	s,flubfr	; flush buffer so we can type null
+   851	400556'	561 03 0 00 000004 		hrroi	v,.Axo8i	; setup for output
+   852	400557'	042 03 0 00 000000 		auxcal	v,0		; output a null
+   853	400560'	263 00 0 00 000000 		popj	s,		; and Return
+   854
+   855	400561'	136 03 0 00 001340'	putalt:	idpb	v,altptr	; deposit byte
+   856	400562'	263 00 0 00 000000 		popj	s,		; and Return
+   857
+   858					;Flubfr	- Output the buffer
+   859					;
+   860					;	Pushj	s,Flubfr	Flubfr()
+   861					;	  <only return>
+   862					;
+   863	400563'	400 04 0 00 000000 	flubfr:	setz	a,		; Put a NULL character
+   864	400564'	136 04 0 00 001341'		idpb	a,bufptr	;   at the end of the buffer
+   865	400565'	201 04 0 00 001342'		movei	a,ttybuf	; Get the address of the buffer
+   866	400566'	505 04 0 00 441100 		hrli	a,(Point ^D9)	; Make a byte pointer (9-bits)
+   867	400567'	202 04 0 00 001341'		movem	a,bufptr	; Store it for next time
+   868	400570'	201 04 0 00 000617 		movei	a,4*ttybfs-1	; Calculate the buffer size
+   869	400571'	202 04 0 00 001506'		movem	a,ttysfd	; Store it for next time
+   870	400572'	561 04 0 00 000005 		hrroi	a,.Axptr	; Output String to aux-port using
+   871	400573'	042 04 0 00 001341'		Auxcal	a,bufptr	;   bufptr ending at first null
+   872	400574'	263 00 0 00 000000 		Popj	s,		; And return
+   873
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 16
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	PutOct	WrtOct	PutNum	WrtNum	PutRdx
+
+   874					Subttl	VUEMAC	PutOct	WrtOct	PutNum	WrtNum	PutRdx
+   875
+   876					;Output number routines - names are obvious
+   877
+   878	400575'	634 01 0 00 000001 	PutOct:	Tdza	t,t		; *PUT*
+   879	400576'	474 01 0 00 000000 	WrtOct:	seto	t,		; *Wrt*
+   880	400577'	202 01 0 00 001336'		movem	t,PutWrt	; Set flag.
+   881	400600'	201 01 0 00 000010 		movei	t,10		; Octal
+   882	400601'	202 01 0 00 001335'		movem	t,Radix		; For the divisor
+   883	400602'	200 03 0 00 000000 		move	v,s		; Get the dividend
+   884	400603'	200 03 0 03 777777 		move	v,-1(v)		; From the stack
+   885	400604'	254 00 0 00 400624'		Jrst	PutRdx		; -----
+   886
+   887	400605'	634 01 0 00 000001 	PutNum:	Tdza	t,t		; *Put*
+   888	400606'	474 01 0 00 000000 	WrtNum:	seto	t,		; *Wrt*
+   889	400607'	202 01 0 00 001336'		movem	t,PutWrt	; Set flag.
+   890	400610'	201 01 0 00 000012 		movei	t,12		; Decimal
+   891	400611'	202 01 0 00 001335'		movem	t,Radix		; For the divisor
+   892	400612'	200 03 0 00 000000 		move	v,s		; Get the dividend
+   893	400613'	200 03 0 03 777777 		move	v,-1(v)		; From the stack
+   894	400614'	325 03 0 00 400624'		jumpge	v,PutRdx	; -------
+   895	400615'	332 00 0 00 004536'		skipe	silent		; Do we really need to do this work?
+   896	400616'	263 00 0 00 000000 		  popj	s,		; No! -- Don't bother
+   897	400617'	214 03 0 00 000003 		movm	v,v		; Get magnitude
+   898	400620'	261 00 0 00 000003 		push	s,v		; Save it
+   899	400621'	201 03 0 00 000055 		movei	v,"-"		; Get sign
+   900	400622'	260 00 0 00 400656'		pushj	s,chrout	; And print it
+   901	400623'	262 00 0 00 000003 		pop	s,v		; Restore number
+   902	400624'	332 00 0 00 004536'	PutRdx:	skipe	silent		; Do we have any work to do?
+   903	400625'	263 00 0 00 000000 		  popj	s,		; No! -- Go home
+   904	400626'	230 03 0 00 001335'	PutRd0:	idiv	v,Radix		; Divide by radix - remainder in "a"
+   905	400627'	250 00 0 00 000003 		exch	s,v		; Swap
+   906	400630'	506 04 0 03 000000 		hrlm	a,(v)		; Store remainder on stack
+   907	400631'	250 00 0 00 000003 		exch	s,v		; Swap
+   908	400632'	332 00 0 00 000003 		skipe	v		; Are we done?
+   909	400633'	260 00 0 00 400626'		pushj	s,PutRd0	; No -- Get next digit
+   910	400634'	250 00 0 00 000004 		exch	s,a		; Swap
+   911	400635'	554 03 0 04 000000 		hlrz	v,(a)		; Get digit to print
+   912	400636'	250 00 0 00 000004 		exch	s,a		; Swap
+   913	400637'	201 03 0 03 000060 		movei	v,"0"(v)	; Make printable
+   914	400640'	254 00 0 00 400656'		pjrst	chrout		; Output character
+   915
+   916
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 17
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Putstring	Writestring
+
+   917					Subttl	VUEMAC	Putstring	Writestring
+   918
+   919					;Putstring -	Routine to write a string to the screen.
+   920					;Writestring -	Routine to write a string to the screen taking care of
+   921					;		possibly funny characters.
+   922					;
+   923					;	Push	s,[Asciz /TEXT/]	Putstring(plit asciz 'TEXT');
+   924					;	Pushj	s,???string		Writestring(plit asciz 'TEXT');
+   925					;	  <only return>
+   926					;
+   927	400641'				PUTSTRING::				;  global routine putstring(foo)
+   928	400641'	634 03 0 00 000003 		Tdza	v,v			;  *Put* entry point
+   929	400642'				WRITESTRING::				;  global routine writestring(foo)
+   930	400642'	474 03 0 00 000000 		Seto	v,			;  *Wrt* entry point
+   931	400643'	202 03 0 00 001336'		Movem	v,PutWrt		;  Set put/wrt flag
+   932	400644'	332 00 0 00 004536'		Skipe	Silent			;   If .silent
+   933	400645'	263 00 0 00 000000 		  Popj	s,			;       then return;
+   934	400646'	200 03 0 00 000000 		Move	v,s			;
+   935	400647'	551 03 1 03 777777 		Hrrzi	v,@-1(v)		;   WS$Ptr _ Point 7,.foo
+   936	400650'	505 03 0 00 440700 		Hrli	v,(Point 7)		;
+   937	400651'	202 03 0 00 001337'		Movem	v,WS$Ptr		;
+   938	400652'	134 03 0 00 001337'	WS$LP:	Ildb	v,WS$Ptr		;   v_scani(WS$Ptr);
+   939	400653'	322 03 0 00 400322'		 Jumpe	v,Cpopj			;   if .v eql 0 then return;
+   940	400654'	260 00 0 00 400656'		pushj	s,chrout		;   Put char into the buffer;
+   941	400655'	254 00 0 00 400652'		Jrst	WS$LP			; end while .v neq 0;
+   942
+   943	400656'	332 00 0 00 001336'	chrout:	Skipe	PutWrt			; consider status of *Put* ! *Wrt*
+   944	400657'	254 00 0 00 400665'		  PJrst	WLOSSV			; *Wrt*
+   945	400660'	254 00 0 00 400546'		PJrst	Putchv			; *Put*
+   946
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 18
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Writeloss
+
+   947					Subttl	VUEMAC	Writeloss
+   948
+   949					;Writeloss -	Routine to write a possibly funny character
+   950					;
+   951					;	Push	s,[char]		Writeloss("char");
+   952					;	Pushj	s,Writeloss
+   953					;	  <only return>
+   954					;
+   955	400661'				WRITELOSS::				; Global routine writeloss(foo)
+   956	400661'	332 00 0 00 004536'		Skipe	Silent			;   If .silent
+   957	400662'	263 00 0 00 000000 		  Popj	s,			;       then return;
+   958	400663'	200 03 0 00 000000 		Move	v,s			;
+   959	400664'	200 03 0 03 777777 		Move	v,-1(v)			; v _ .foo
+   960	400665'	301 03 0 00 000040 	WLOSSV:	Cail	v," "			; If .foo geq " "
+   961	400666'	301 03 0 00 000177 		Cail	v,177			;     and lss .Rub
+   962	400667'	254 00 0 00 400673'		  Jrst	WLOSS0			; NO
+   963	400670'	260 00 0 00 400546'		Pushj	s,PUTCHV		;     Putchv(.foo)
+   964	400671'	350 00 0 00 004532'		Aos	Physpos			;     Physpos _ Physpos+1
+   965	400672'	263 00 0 00 000000 		  Popj	s,			;   end; Return;
+   966
+   967	400673'	306 03 0 00 000015 	WLOSS0:	Cain	v,15			; else If .foo eql #cr
+   968	400674'	254 00 0 00 000000*		Jrst	LEFTMARGIN		;         then return Leftmargin()
+   969	400675'	302 03 0 00 000011 		Caie	v,11			; else If .foo eql #tab
+   970	400676'	254 00 0 00 400710'		  Jrst	WLOSS2			; NO
+   971	400677'	261 00 0 00 401713'		Push	s,[Exp 11]		;	then begin
+   972	400700'	261 00 0 00 004532'		Push	s,PHYSPOS		;
+   973	400701'	260 00 0 00 400731'		Pushj	s,UPDATECURS		;	  Updatecursor(#tab,.Physpos)
+   974	400702'	274 00 0 00 401714'		Sub	s,[2,,2]		;
+   975	400703'	261 00 0 00 000003 		Push	s,v			;
+   976	400704'	261 00 0 00 004533'		Push	s,PHYSLIN		;
+   977	400705'	260 00 0 00 000000*		Pushj	s,GOXY			;	  Goxy( .v, .Physlin)
+   978	400706'	274 00 0 00 401714'		Sub	s,[2,,2]		;
+   979	400707'	263 00 0 00 000000 		Popj	s,			;	Return;
+   980
+   981	400710'	312 03 0 00 000000*	WLOSS2:	Came	v,ESCVALUE		; else If .foo eql .EscValue
+   982	400711'	254 00 0 00 400716'		  Jrst	WLOSS4			; NO
+   983	400712'	201 03 0 00 000044 		Movei	v,"$"			;      then
+   984	400713'	260 00 0 00 400546'		Pushj	s,PUTCHV		;	  Putchv("$")
+   985	400714'	350 00 0 00 004532'		Aos	PHYSPOS			;	  Physpos _ .Physpos + 1
+   986	400715'	263 00 0 00 000000 		Popj	s,			;	  Return
+   987
+   988	400716'	306 03 0 00 000177 	WLOSS4:	Cain	v,177			; else if .foo eql .Rub
+   989	400717'	211 03 0 00 000035 		  Movni	v,35			;	then foo _ "#"-#100;
+   990	400720'	261 00 0 00 000003 		Push	s,v			; else+rubout ...
+   991	400721'	201 03 0 00 000136 		Movei	v,"^"			;
+   992	400722'	260 00 0 00 400546'		Pushj	s,PUTCHV		;	  Putchv("^")
+   993	400723'	262 00 0 00 000003 		Pop	s,v			;
+   994	400724'	271 03 0 00 000100 		Addi	v,100			;
+   995	400725'	260 00 0 00 400546'		Pushj	s,PUTCHV		;	  Putchv(.foo+#100)
+   996	400726'	350 00 0 00 004532'		Aos	PHYSPOS			;
+   997	400727'	350 00 0 00 004532'		Aos	PHYSPOS			;	  Physpos _ .Physpos + 2
+   998	400730'	263 00 0 00 000000 		Popj	s,			;	Return;
+   999
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 19
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	UpdateCursor
+
+  1000					Subttl	VUEMAC	UpdateCursor
+  1001
+  1002					;UpdateCursor -	Routine to calculate the next character position
+  1003					;		beginning at .foo if the character is .xc
+  1004					;
+  1005					;	Push	s,["char"]		UpdateCursor (xc,foo);
+  1006					;	Push	s,[position]
+  1007					;	Pushj	s,UpdateCursor
+  1008					;	  <only return>
+  1009					;
+  1010
+  1011	400731'				UPDATECURS::			
+  1012	400731'	200 01 0 00 000000 		Move	t,s			;
+  1013	400732'	200 03 0 01 777777 		Move	v,-1(t)			; Formal (.foo)
+  1014	400733'	200 01 0 01 777776 		Move	t,-2(t)			; Formal (.xc)
+  1015	400734'	302 01 0 00 000011 		Caie	t,11			;
+  1016	400735'	254 00 0 00 400743'		  Jrst	UPDCUR			;
+  1017	400736'	360 03 0 00 000000 		Soj	v,			;	.foo - 1
+  1018	400737'	230 03 0 00 004534'		Idiv	v,TABSIZE		;	  % .tabsize
+  1019	400740'	220 03 0 00 004534'		Imul	v,TABSIZE		;	    * .tabsize
+  1020	400741'	270 03 0 00 004534'		Add	v,TABSIZE		;	 + .tabsize
+  1021	400742'	344 03 0 00 400322'		Aoja	v,Cpopj			;	 + 1
+  1022
+  1023	400743'	301 01 0 00 000040 	UPDCUR:	Cail	t," "			; else if .xc geq " "
+  1024	400744'	301 01 0 00 000177 		Cail	t,177			;     and .xc lss .Rub
+  1025	400745'	304 00 0 00 000000 		  Caia				; NO
+  1026	400746'	344 03 0 00 400322'		Aoja	v,Cpopj			;	then .foo + 1
+  1027	400747'	316 01 0 00 400710*		Camn	t,ESCVALUE		; else if .xc eql .EscValue
+  1028	400750'	344 03 0 00 400322'		  Aoja	v,Cpopj			;	then .foo + 1
+  1029	400751'	271 03 0 00 000002 		Addi	v,2			; else .foo + 2
+  1030	400752'	263 00 0 00 000000 		Popj	s,			; Global Return!
+  1031
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 20
+VIEW	MAC	24-Aug-71 17:07		OLD Q-REGister MACRO space 100 words * n return a pointer to it
+
+  1032					Subttl	OLD Q-REGister MACRO space 100 words * n return a pointer to it
+  1033
+  1034					;Qreg	- Returns a byte pointer to q-space indexed by (a to z)
+  1035					;
+  1036					;	Push	s,["a"]		tp _ Qreg("a")
+  1037					;	Pushj	s,qreg
+  1038					;	  <only return>				v _ [Point 7,qspace("a")]
+  1039					;
+  1040	400753'	201 03 0 00 001511'	qreg:	movei	v,qspace	; Address of q-space
+  1041	400754'	505 03 0 00 441100 		hrli	v,441100	; Build a pointer
+  1042	400755'	200 04 0 00 000000 		move	a,s		; Get the name from the stack
+  1043	400756'	200 04 0 04 777777 		move	a,-1(a)
+  1044	400757'	301 04 0 00 000141 		cail	a,"a"		; Allow both UPPER and LOWER case
+  1045	400760'	201 04 0 04 777740 		 movei	a,-40(a)	;  to map into A-Z
+  1046	400761'	201 04 0 04 777677 		movei	a,-"A"(a)	; Offset from 0
+  1047	400762'	221 04 0 00 000050 		imuli	a,qwsize	; 100 words of storage for each
+  1048	400763'	270 03 0 00 000004 		add	v,a		; add for offset into q-space
+  1049	400764'	263 00 0 00 000000 		popj	s,		; Return a byte pointer in V
+  1050
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 21
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Dorescan - Rescan the command line
+
+  1051					Subttl	VUEMAC	Dorescan - Rescan the command line
+  1052
+  1053	400765'				dorescan:
+  1054	400765'	474 03 0 00 000000 		seto	v,		; setup for self
+  1055	400766'	051 06 0 00 000003 		getlch	v		; and read terminal bits
+  1056	400767'	607 03 0 00 100000 		tlnn	v,100000	; check rescan line available
+  1057	400770'	263 00 0 00 000000 		 popj	s,		;  no, don't screw type ahead
+  1058	400771'	051 10 0 00 000000 		rescan			; Allow the last line to be read
+  1059	400772'	051 14 0 00 000000 		 skpinl			; Anything there?
+  1060	400773'	263 00 0 00 000000 		   popj	s,		;  No! Just return
+  1061
+  1062					ifn ftcommand,<
+  1063	400774'	201 05 0 00 000006 	reresc:	movei b,6		; Setup a temp buffer
+  1064	400775'	402 00 0 00 005610'		setzm	rsrwrd		;   for the command name
+  1065	400776'	200 04 0 00 401715'		move	a,[point 6,rsrwrd]
+  1066	400777'	202 04 0 00 005611'		movem	a,rsrwpt	; and a pointer to it
+  1067					>
+  1068	401000'	561 04 0 00 000001 	rescn:	hrroi	a,.Axi8s	; Look for a filename argument
+  1069	401001'	042 04 0 00 000004 		Auxcal	a,a		;  (Use Aux port so won't kill image mode)
+  1070	401002'	334 00 0 00 000000 		 skipa
+  1071	401003'	624 04 0 00 000200 		  trza	a,200
+  1072	401004'	263 00 0 00 000000 		popj s,			;Flopped:  no hyphen
+  1073	401005'	302 04 0 00 000050 		caie	a,"("		;[CB @ GC] *** Allow "(" since monitor does
+  1074	401006'	306 04 0 00 000073 		cain	a,";"		;for visit file
+  1075	401007'	254 00 0 00 401034'		jrst	vfile
+  1076	401010'	306 04 0 00 000041 		cain	a,"!"		;for old buffer
+  1077	401011'	254 00 0 00 401036'		jrst	obuff
+  1078					ife ftcommand,<
+  1079						caie	a,"-"		;[CB] Hack attack
+  1080					>
+  1081					ifn ftcommand,<
+  1082	401012'	306 04 0 00 000055 		cain	a,"-"
+  1083	401013'	254 00 0 00 401025'		  jrst	rfile		;for read file
+  1084	401014'	301 04 0 00 000141 		cail	a,"a"
+  1085	401015'	303 04 0 00 000172 		caile	a,"z"
+  1086	401016'	304 00 0 00 000000 		  caia
+  1087	401017'	201 04 0 04 777740 		movei	a,-40(a)
+  1088	401020'	201 04 0 04 777740 		movei	a,-40(a)	;make sixbit
+  1089	401021'	323 04 0 00 401040'		 jumple	a,restst	;test word for monitor command
+  1090	401022'	363 05 0 00 401000'		sojle	b,rescn
+  1091	401023'	136 04 0 00 005611'		idpb	a,rsrwpt	;save the character
+  1092					>
+  1093	401024'	254 00 0 00 401000'		jrst	rescn		;Look again
+  1094	401025'	260 00 0 00 000000*	rfile:	pushj	s,ctrlxr	;Found the filename arg, process it
+  1095	401026'				lrt:
+  1096	401026'	561 04 0 00 000001 		hrroi	a,.Axi8s	;eat the line feed if we can
+  1097	401027'	042 04 0 00 000004 		Auxcal	a,a		; (Use Aux port so won't kill image mode)
+  1098	401030'	334 00 0 00 000000 		 skipa
+  1099	401031'	624 04 0 00 000200 		  trza	a,200
+  1100	401032'	263 00 0 00 000000 		popj	s,
+  1101	401033'	263 00 0 00 000000 		popj	s,
+  1102	401034'	260 00 0 00 000000*	vfile:	pushj	s,ctrlxv
+  1103	401035'	254 00 0 00 401026'		jrst	lrt		;eat the line feed if we can.
+  1104	401036'	260 00 0 00 000000*	obuff:	pushj	s,uctrlo
+  1105	401037'	254 00 0 00 401026'		jrst	lrt		;eat the line feed if we can.
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 21-1
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Dorescan - Rescan the command line
+
+  1106					ifn ftcommand,<
+  1107	401040'	305 05 0 00 000000 	restst:	caige	b,0
+  1108	401041'	400 05 0 00 000000 		  setz	b,
+  1109	401042'	221 05 0 00 000006 		imuli	b,6
+  1110	401043'	474 04 0 00 000000 		seto	a,
+  1111	401044'	242 04 0 05 000000 		lsh	a,(b)
+  1112	401045'	200 05 0 00 401716'		move	b,[sixbit/vue/]
+  1113	401046'	404 04 0 00 000005 		and	a,b
+  1114	401047'	316 04 0 00 005610'		camn	a,rsrwrd
+  1115	401050'	254 00 0 00 401025'		  jrst	rfile
+  1116	401051'	200 04 0 00 401717'		move	a,[sixbit/ct4/]
+  1117	401052'	316 04 0 00 005610'		camn	a,rsrwrd
+  1118	401053'	254 00 0 00 401025'		  jrst	rfile
+  1119	401054'	200 04 0 00 401716'		move	a,[sixbit/vue/]
+  1120	401055'	316 04 0 00 005610'		camn	a,rsrwrd
+  1121	401056'	254 00 0 00 401025'		  jrst	rfile
+  1122	401057'	254 00 0 00 400774'		jrst	reresc
+  1123					> ; end ifn ftcommand
+  1124
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 22
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Quit	- Exit the editor (allow "continue")
+
+  1125					Subttl	VUEMAC	Quit	- Exit the editor (allow "continue")
+  1126
+  1127	401060'	260 00 0 00 400323'	quit:	pushj	s,fen		; Reset the terminal
+  1128	401061'	047 01 0 00 000012 		exit	1,		; Bye.
+  1129					; *** maybe need to reset inirvx here ***
+  1130	401062'	260 00 0 00 400271'		pushj	s,fef		; Oh?  Turn it back on.
+  1131	401063'	263 00 0 00 000000 		popj	s,		; Return to where we came from
+  1132
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 23
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Gettty	Getwid	Getaux	Getlen
+
+  1133					Subttl	VUEMAC	Gettty	Getwid	Getaux	Getlen
+  1134
+  1135	401064'	334 04 0 00 401720'	gettty:	skipa	a,[-1,,.axttp]	; (100) Terminal type
+  1136	401065'	561 04 0 00 000027 	getwid:	hrroi	a,.axwid	;  (27) Line width
+  1137	401066'	474 03 0 00 000000 	getaux:	seto	v,		; Read my port
+  1138	401067'	042 04 0 00 000003 		auxcal	a,v		; Value returned in v
+  1139	401070'	263 00 0 00 000000 		popj s,
+  1140
+  1141	401071'	474 03 0 00 000000 	getlen:	seto	v,	; Tymcom-X doesn't do this at all
+  1142	401072'	263 00 0 00 000000 		popj s,
+  1143
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 24
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Getaun	Getab	Mail
+
+  1144					Subttl	VUEMAC	Getaun	Getab	Mail
+  1145
+  1146	401073'	561 03 0 00 000006 	Mail:	hrroi	v,.gtprv	; Look at user privs
+  1147	401074'	047 03 0 00 000041 		gettab	v,		;    in the monitor tables
+  1148	401075'	400 03 0 00 000000 		  setz	v,		; Well?
+  1149	401076'	616 03 0 00 401721'		tdnn	v,[1b8!1b23]	; Check for MAIL-WAITING bit(s)
+  1150	401077'	634 03 0 00 000003 		  tdza	v,v		;  No! Clear all other bits & skip
+  1151	401100'	201 03 0 00 000001 		movei	v,1		; Yes! Make it TRUE
+  1152	401101'	263 00 0 00 000000 		popj	s,		; Return
+  1153
+  1154	401102'	561 03 0 00 000003 	getnam:	hrroi	v,.gtnam	; Program name
+  1155	401103'	254 00 0 00 401112'		jrst	getab
+  1156	401104'	561 03 0 00 777760 	getlic:	hrroi	v,.gtlic	; User license
+  1157	401105'	254 00 0 00 401112'		jrst	getab
+  1158	401106'	561 03 0 00 000006 	getprv:	hrroi	v,.gtprv	; User privilages
+  1159	401107'	254 00 0 00 401112'		jrst	getab
+  1160
+  1161	401110'	334 03 0 00 401722'	getfpn:	skipa	v,[-1,,.gtfpn]	; Frame ppn
+  1162	401111'	561 03 0 00 777755 	getaun:	hrroi	v,.gtaun	; Accounting User Number
+  1163	401112'	047 03 0 00 000041 	getab:	gettab	v,		;    for this user
+  1164	401113'	400 03 0 00 000000 		  setz	v,		; Hmmmm. well indicate FALSE
+  1165	401114'	263 00 0 00 000000 		popj	s,		; Return
+  1166
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 25
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Getppn	Getjob
+
+  1167					Subttl	VUEMAC	Getppn	Getjob
+  1168
+  1169	401115'	047 03 0 00 000024 	Getppn:	Calli	v,24		; Getppn v,
+  1170	401116'	255 00 0 00 000000 		  jfcl			; Jacct skip if 1,2
+  1171	401117'	263 00 0 00 000000 		popj	s,		; Return
+  1172
+  1173	401120'	047 03 0 00 000030 	Getjob:	Pjob	v,		; Get my job number
+  1174	401121'	263 00 0 00 000000 		popj	s,		; Return
+  1175
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 26
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	PutBCD	PutPad
+
+  1176					Subttl	VUEMAC	PutBCD	PutPad
+  1177
+  1178	401122'	332 00 0 00 004536'	PutBCD:	skipe	silent
+  1179	401123'	263 00 0 00 000000 		  popj	s,
+  1180	401124'	200 03 0 00 000000 		move	v,s		;for indexing.
+  1181	401125'	200 03 0 03 777777 		move	v,-1(v)		;the argument.
+  1182	401126'	231 03 0 00 000012 		idivi	v,12		;divide by 10. 2 has x/10, 3 has rem.
+  1183	401127'	242 03 0 00 000004 		lsh	v,4		;shift l
+  1184	401130'	270 03 0 00 000004 		add	v,a		;now r2 has bcd version.
+  1185	401131'	260 00 0 00 400546'		pushj	s,putchv
+  1186	401132'	263 00 0 00 000000 		popj	s,
+  1187
+  1188	401133'	332 00 0 00 004536'	PutPad:	skipe	silent
+  1189	401134'	263 00 0 00 000000 		  popj	s,
+  1190	401135'	200 03 0 00 000000 		move	v,s		;for indexing.
+  1191	401136'	200 04 0 03 777777 		move	a,-1(v)		;the padding width.
+  1192	401137'	200 03 0 03 777776 		move	v,-2(v)		;the number.
+  1193	401140'	200 05 0 00 000004 		move	b,a		;save a copy thereof.
+  1194	401141'	200 06 0 00 000003 		move	c,v		; ...
+  1195	401142'	231 06 0 00 000012 		idivi	c,12		; divide
+  1196	401143'	261 00 0 00 000007 		push	s,d		; save on stack
+  1197	401144'	367 04 0 00 401142'		 sojg	a,.-2		; loop!
+  1198	401145'	262 00 0 00 000003 		pop	s,v		; get number
+  1199	401146'	271 03 0 00 000060 		addi	v,"0"
+  1200	401147'	260 00 0 00 400546'		pushj	s,putchv
+  1201	401150'	367 05 0 00 401145'		 sojg	b,.-3		; to pop - loop
+  1202	401151'	263 00 0 00 000000 		popj	s,
+  1203
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 27
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	FMove - Move pointer forward n bytes
+
+  1204					Subttl	VUEMAC	FMove - Move pointer forward n bytes
+  1205
+  1206	401152'				Moveforward::
+  1207	401152'	200 03 0 00 004551'	Fmove:	move	v,hend		; Get end of buffer
+  1208	401153'	274 03 0 00 004552'		sub	v,hbot		; See if we're there?
+  1209	401154'	323 03 0 00 400322'		 jumple	v,Cpopj		; Yes -- nothing to do
+  1210	401155'	200 04 0 00 000000 		move	a,s		; How far do we "want" to move
+  1211	401156'	200 04 0 04 777777 		move	a,-1(a)		;   as specified FMOVE(N)
+  1212	401157'	313 04 0 00 000003 		camle	a,v		; Make sure it's not too far
+  1213	401160'	200 04 0 00 000003 		  move	a,v		;   it is, so cut it short
+  1214	401161'	272 04 0 00 004554'		addm	a,lowend	; Bump all the counters by
+  1215	401162'	272 04 0 00 004552'		addm	a,hbot		;   the appropriate amount
+  1216	401163'	135 03 0 00 004553'	Fmove0:	ldb	v,hptr		; get the character
+  1217	401164'	133 03 0 00 004553'		ibp	v,hptr		; then increment it!!!
+  1218	401165'	136 03 0 00 004556'		idpb	v,lowptr	;  and put it away
+  1219	401166'	302 03 0 00 000015 		caie	v,15		; line terminator?
+  1220	401167'	254 00 0 00 401174'		  jrst	Fmove2		; no, skip
+  1221	401170'	350 00 0 00 004557'		 aos	bfrlin		; yes, increment count
+  1222	401171'	350 00 0 00 004562'		 aos	curlin		;  increment line
+  1223	401172'	201 03 0 00 000001 		 movei	v,1		;  get flag for muline
+  1224	401173'	254 00 0 00 401204'		 jrst	Fmove6		;  and finish up loop
+  1225	401174'	302 03 0 00 000014 	Fmove2:	caie	v,14		; page terminator?
+  1226	401175'	254 00 0 00 401204'		  jrst	Fmove6		; no, skip
+  1227	401176'	350 00 0 00 004560'		 aos	bfrpag		; yes, increment pages
+  1228	401177'	402 00 0 00 004557'		 setzm	bfrlin		;   and clear linecount
+  1229	401200'	402 00 0 00 004562'		 setzm	curlin		;   for buffer and screen
+  1230	401201'	201 03 0 00 000001 		 movei	v,1		;   get flag value
+  1231	401202'	202 00 0 00 004542'		 movem	scrmod		;    tell the screen will change
+  1232	401203'	202 00 0 00 004543'	Fmove4:	 movem	muline		;    and it's multi-line
+  1233	401204'	367 04 0 00 401163'	Fmove6:	sojg	a,Fmove0	; loop till done
+  1234	401205'	135 03 0 00 004553'		ldb	v,hptr		; return value of next character
+  1235	401206'	263 00 0 00 000000 		popj	s,		; return
+  1236
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 28
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	BMove - Move pointer backward n bytes
+
+  1237					Subttl	VUEMAC	BMove - Move pointer backward n bytes
+  1238
+  1239	401207'				MoveBackward::
+  1240	401207'	200 03 0 00 004554'	Bmove:	move	v,lowend	; Get end of buffer
+  1241	401210'	360 03 0 00 000000 		soj	v,		;  subtract to beginning
+  1242	401211'	323 03 0 00 400322'		 jumple	v,Cpopj		; nothing to do if none left
+  1243	401212'	200 04 0 00 000000 		move	a,s		; How far do we "want" to move
+  1244	401213'	200 04 0 04 777777 		move	a,-1(a)		;   as specified BMOVE(N)
+  1245	401214'	313 04 0 00 000003 		camle	a,v		; Make sure it's not too far
+  1246	401215'	200 04 0 00 000003 		  move	a,v		;   it is, so cut it short
+  1247	401216'	210 03 0 00 000004 		movn	v,a		; Negate.
+  1248	401217'	272 03 0 00 004554'		addm	v,lowend	; Backup all the counters by
+  1249	401220'	272 03 0 00 004552'		addm	v,hbot		;   the appropriate amount
+  1250	401221'	205 03 0 00 070000 	Bmove0:	movsi	v,(7b5)		; first, decrement pointer
+  1251	401222'	272 03 0 00 004553'		addm	v,hptr		;   for the high end
+  1252	401223'	210 03 0 00 401723'		movn	v,[430000,,1]	; word offset if necessary
+  1253	401224'	335 00 0 00 004553'		skipge	hptr		; check high ptr next
+  1254	401225'	272 03 0 00 004553'		  addm	v,hptr		; yes, fixup for previous
+  1255	401226'	135 03 0 00 004556'		ldb	v,lowptr	; second, get the character
+  1256	401227'	137 03 0 00 004553'		dpb	v,hptr		;  and put it away
+  1257	401230'	302 03 0 00 000015 		caie	v,15		; line terminator?
+  1258	401231'	254 00 0 00 401236'		  jrst	Bmove2		; no, skip
+  1259	401232'	370 00 0 00 004557'		 sos	bfrlin		; yes, decrement line count
+  1260	401233'	370 00 0 00 004562'		 sos	curlin		;   in buffer and screen
+  1261	401234'	201 03 0 00 000001 		 movei	v,1		;   get flag for muline
+  1262	401235'	254 00 0 00 401245'		 jrst	Bmove4		;   to set below
+  1263	401236'	302 03 0 00 000014 	Bmove2:	caie	v,14		; page terminator?
+  1264	401237'	254 00 0 00 401246'		  jrst	Bmove6		; no, skip
+  1265	401240'	370 00 0 00 004560'		 sos	bfrpag		; yes, increment pages
+  1266	401241'	402 00 0 00 004557'		 setzm	bfrlin		;   and clear linecounts in
+  1267	401242'	402 00 0 00 004562'		 setzm	curlin		;   both buffer and on screen
+  1268	401243'	201 03 0 00 000001 		 movei	v,1		;   get flag value
+  1269	401244'	202 03 0 00 004542'		 movem	v,scrmod	;    to show screen changes
+  1270	401245'	202 03 0 00 004543'	Bmove4:	 movem	v,muline	;    and multi-line change
+  1271	401246'	205 03 0 00 070000 	Bmove6:	movsi	v,(7b5)		; last, decrement pointer
+  1272	401247'	272 03 0 00 004556'		addm	v,lowptr	;   for the low end
+  1273	401250'	210 03 0 00 401723'		movn	v,[430000,,1]	; word offset if necessary
+  1274	401251'	335 00 0 00 004556'		skipge	lowptr		; check low ptr first
+  1275	401252'	272 03 0 00 004556'		  addm	v,lowptr	; yes, fixup for previous
+  1276	401253'	367 04 0 00 401221'		sojg	a,Bmove0	; loop till done
+  1277	401254'	135 03 0 00 004556'		ldb	v,lowptr	; and return value of next (previous)
+  1278	401255'	263 00 0 00 000000 		popj	s,		; return
+  1279
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 29
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Makptr, Getchxr( loc )
+
+  1280					Subttl	VUEMAC	Makptr, Getchxr( loc )
+  1281
+  1282	401256'	201 03 0 00 000015 	getchx:	movei	v,15		;prepare to return a <cr>.
+  1283	401257'	200 04 0 00 000000 		move	a,s
+  1284	401260'	337 04 0 04 777777 		skipg	a,-1(a)		;1 is start, get desired char.
+  1285	401261'	263 00 0 00 000000 		 popj	s,
+  1286	401262'	315 04 0 00 004554'		camge	a,lowend	;compare arg with lowend
+  1287	401263'	254 00 0 00 401270'		 jrst	norel		;in low part of gap.
+  1288	401264'	270 04 0 00 004552'		add	a,hbot		;add this in.
+  1289	401265'	274 04 0 00 004554'		sub	a,lowend	;just do the formula
+  1290	401266'	311 04 0 00 004551'		caml	a,hend
+  1291	401267'	263 00 0 00 000000 		 popj	s,
+  1292	401270'	231 04 0 00 000005 	norel:	idivi	a,5		;a is count/5, a+1 is remainder
+  1293	401271'	270 04 0 05 401276'		add	a,table+1(a+1)	;convert to a ldb pointer
+  1294	401272'	270 04 0 00 004547'		add	a,p		;offset from the buffer address
+  1295	401273'	135 03 0 00 000004 		ldb	v,a		;magic
+  1296	401274'	263 00 0 00 000000 		popj	s,
+  1297
+  1298	401275'	100677	777777		table:	100700-1,,-1		; fourth byte last-word
+  1299	401276'	010677	777777			 10700-1,,-1		; fifth  byte last-word
+  1300	401277'	350700	000000			350700,,0		; first  byte
+  1301	401300'	260700	000000			260700,,0		; second byte
+  1302	401301'	170700	000000			170700,,0		; third  byte
+  1303	401302'	100700	000000			100700,,0		; fourth byte
+  1304
+  1305
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 30
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Therep, Ftp	(keep near GETCHXR & TABLE)
+
+  1306					Subttl	VUEMAC	Therep, Ftp	(keep near GETCHXR & TABLE)
+  1307
+  1308	401303'	200 04 0 00 000000 	therep:	move	a,s		; convert char pos in arg 2 to an ildb ptr.
+  1309	401304'	200 05 0 04 777777 		move	b,-1(a)		; the char ptr.
+  1310	401305'	315 05 0 00 004554'		camge	b,lowend	;compare arg with lowend
+  1311	401306'	254 00 0 00 401311'		 jrst	norel2		;in low part of gap.
+  1312	401307'	270 05 0 00 004552'		add	b,hbot		;add this in.
+  1313	401310'	274 05 0 00 004554'		sub	b,lowend	;just do the formula
+  1314	401311'	231 05 0 00 000005 	norel2:	idivi	b,5		;b is count/5, b+1 is remainder
+  1315	401312'	270 05 0 00 004547'		add	b,p
+  1316	401313'	270 05 0 06 401275'		add	b,table(c)	;magic byte ptr we will use.
+  1317	401314'	254 00 0 00 401317'		jrst	ftpae		;alt entry to ftp
+  1318
+  1319						;Fast version of therep. Takes as arg 1 (-2(sp)) the line we're
+  1320						;looking for, and as arg 2 (-1(sp)) the ildb byte ptr to use.
+  1321
+  1322	401315'	200 04 0 00 000000 	ftp:	move	a,s		;get the sp somewhere useful.
+  1323	401316'	200 05 0 04 777777 		move	b,-1(a)		;the byte ptr to use.
+  1324	401317'	200 04 0 04 777776 	ftpae:	move	a,-2(a)		;the ptr to line
+  1325	401320'	200 06 0 04 000000 		move	c,0(a)		;the size field
+  1326	401321'	505 04 0 00 004400 		hrli	a,004400	;make a pointer (point 36,loc,35)
+  1327	401322'	201 03 0 00 000000 		movei	v,0		;return false by default.
+  1328
+  1329	401323'	361 06 0 00 401341'	ftplp:	sojl	c,ftpwon	;if we are equal.
+  1330	401324'	134 07 0 00 000005 		ildb	d,b		;get a buffer char.
+  1331	401325'	134 10 0 00 000004 		ildb	e,a		;get search char.
+  1332	401326'	430 10 0 00 000007 		xor	e,d		;determine intersection set.
+  1333	401327'	322 10 0 00 401323'		 jumpe	e,ftplp		;ok! equal - try next
+  1334	401330'	302 10 0 00 000040 		caie	e,40		;differ by case?
+  1335	401331'	263 00 0 00 000000 		 popj	s,		;no! return.
+  1336	401332'	620 07 0 00 000040 		trz	d,40		;will make lower case upper
+  1337	401333'	301 07 0 00 000101 		cail	d,"A"		;less than "A" is ok.
+  1338	401334'	303 07 0 00 000132 		 caile	d,"Z"		;less than "Z".
+  1339	401335'	263 00 0 00 000000 		  popj	s,		;non alphabetic! return.
+  1340	401336'	332 00 0 00 000000*		skipe	caseok		;either case ok?
+  1341	401337'	263 00 0 00 000000 		 popj	s,		;no!  must match.  return.
+  1342	401340'	254 00 0 00 401323'		jrst	ftplp		;increment loop
+  1343	401341'	201 03 0 00 000001 	ftpwon:	movei	v,1		;return true.
+  1344	401342'	263 00 0 00 000000 		popj	s,
+  1345
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 31
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	EolChxr	EolBreak  - End of line check (CR or FF)
+
+  1346					Subttl	VUEMAC	EolChxr	EolBreak  - End of line check (CR or FF)
+  1347
+  1348					; routine eolchxr (i) = eolbreak( getchxr(.i) );
+  1349					;	  eolchxr returns 1 if ith char is an end-of-line/page
+  1350					; routine eolbreak (ch) = ("?M" eql .ch or "?L" eql .ch);
+  1351					;	  eolbreak returns 1 if at end-of-line end-of-page
+  1352					; routine eoltype (ch) returns 1 if eol-char is FF & SOS mode is true.
+  1353
+  1354	401343'				EOLCHXR::
+  1355	401343'	200 03 0 00 000000 		move	v,s		; Get the character position
+  1356	401344'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1357	401345'	261 00 0 00 000003 		push	s,v		; Push for GET-CHAR
+  1358	401346'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1359	401347'	274 00 0 00 401724'		sub	s,[1,,1]	; pop argument
+  1360	401350'	254 00 0 00 401353'		jrst	.+3		; jump into code
+  1361	401351'				EOLBREAK::
+  1362	401351'	200 03 0 00 000000 		move	v,s		; Get the character
+  1363	401352'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1364	401353'	302 03 0 00 000015 		caie	v,15		; Compare with CR
+  1365	401354'	306 03 0 00 000014 		cain	v,14		;   and FF
+  1366	401355'	334 03 0 00 401676'	L.RET1:	 skipa	v,[1]		; A match!!! (SKIP)
+  1367	401356'	400 03 0 00 000000 	L.RET0:	setz	v,		; no match.
+  1368	401357'	263 00 0 00 000000 		popj	s,		; Return result.
+  1369
+  1370
+  1371	401360'				EOLTYPE::
+  1372	401360'	336 00 0 00 000000*		skipn	sosmod		; If not Page-Mode this is moot
+  1373	401361'	254 00 0 00 401356'		  jrst	L.RET0		;   so return FALSE
+  1374	401362'	200 03 0 00 000000 		move	v,s		; Get the character
+  1375	401363'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1376	401364'	302 03 0 00 000014 		caie	v,14		; Compare if FF
+  1377	401365'	254 00 0 00 401356'		  jrst	L.RET0		; No! ----- Return FALSE
+  1378	401366'	254 00 0 00 401355'		 jrst	L.RET1		; Yes! ---- Return TRUE
+  1379
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 32
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	FmtChxr	FmtBreak - Formated text check ("@" and ".")
+
+  1380					Subttl	VUEMAC	FmtChxr	FmtBreak - Formated text check ("@" and ".")
+  1381
+  1382					; routine fmtchxr (i) = fmtbreak( getchxr(.i) );
+  1383					;	  fmtchxr returns 1 if ith char is an "@" or "."
+  1384					; routine fmtbreak (ch) = ("@" eql .ch or "." eql .ch);
+  1385					;	  fmtbreak returns 1 if the ith character is an "@" or "."
+  1386
+  1387	401367'				FMTCHXR:
+  1388	401367'	200 03 0 00 000000 		move	v,s		; Get the character position
+  1389	401370'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1390	401371'	261 00 0 00 000003 		push	s,v		; Push for GET-CHAR
+  1391	401372'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1392	401373'	274 00 0 00 401724'		sub	s,[1,,1]	; pop argument
+  1393	401374'	254 00 0 00 401377'		jrst	.+3		; jump into code
+  1394	401375'				FMTBREAK:
+  1395	401375'	200 03 0 00 000000 		move	v,s		; Get the character
+  1396	401376'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1397	401377'	302 03 0 00 000056 		caie	v,"."		; Compare with period
+  1398	401400'	306 03 0 00 000100 		cain	v,"@"		;   and at-sign
+  1399	401401'	334 03 0 00 401676'		 skipa	v,[1]		; A match!!! (SKIP)
+  1400	401402'	400 03 0 00 000000 		setz	v,		; no match.
+  1401	401403'	263 00 0 00 000000 		popj	s,		; Return result.
+  1402
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 33
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	WhtChxr  WhtBreak  WhiteSpace  WBreak
+
+  1403					Subttl	VUEMAC	WhtChxr  WhtBreak  WhiteSpace  WBreak
+  1404
+  1405					; routine whtchxr (i) = whtbreak( getchxr(.i) );
+  1406					;	  whtbreak returns 1 if at some horizontal whitespace
+  1407					; routine whtbreak (ch) = (" " eql .ch or "?I" eql .ch);
+  1408					;	  whtchxr returns 1 if ith char is horizontal whitespace
+  1409
+  1410	401404'				WHTCHXR:
+  1411	401404'	200 03 0 00 000000 		move	v,s		; Get the character position
+  1412	401405'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1413	401406'	261 00 0 00 000003 		push	s,v		; Push for GET-CHAR
+  1414	401407'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1415	401410'	274 00 0 00 401724'		sub	s,[1,,1]	; pop argument
+  1416	401411'	254 00 0 00 401414'		jrst	.+3		; jump into code
+  1417	401412'				WHTBREAK:
+  1418	401412'	200 03 0 00 000000 		move	v,s		; Get the character
+  1419	401413'	200 03 0 03 777777 		move	v,-1(v)		;   from the top of the stack
+  1420	401414'	302 03 0 00 000040 		caie	v," "		; Compare with space
+  1421	401415'	306 03 0 00 000011 		cain	v,11		;   and Tab
+  1422	401416'	334 03 0 00 401676'		 skipa	v,[1]		; A match!!! (SKIP)
+  1423	401417'	400 03 0 00 000000 		setz	v,		; no match.
+  1424	401420'	263 00 0 00 000000 		popj	s,		; Return result.
+  1425
+  1426					; routine whitespace returns 1 if char is "white" or "eol"
+  1427
+  1428	401421'				WHITESPACE::
+  1429	401421'	200 01 0 00 000000 		move	t,s		; Get character from
+  1430	401422'	200 01 0 01 777777 		move	t,-1(t)		;  the stack
+  1431	401423'	261 00 0 00 000001 		push	s,t		; and then just check
+  1432	401424'	260 00 0 00 401412'		pushj	s,WHTBREAK	;  to see if it's white
+  1433	401425'	326 03 0 00 401533'		 jumpn	v,L1.RT1	; Yes?  Pop stack and return TRUE
+  1434	401426'	262 00 0 00 000001 		pop	s,t		; restore character
+  1435	401427'	254 00 0 00 401351'		jrst	EOLBREAK	;  and return through EOL check
+  1436
+  1437					; routine wbreak returns 1 if char is not alphanumeric (a-z,A-Z,0-9)
+  1438
+  1439	401430'				WBREAK::
+  1440	401430'	200 01 0 00 000000 		move	t,s		; Get character from
+  1441	401431'	200 01 0 01 777777 		move	t,-1(t)		;  the stack
+  1442	401432'	400 03 0 00 000000 		setz	v,		; Default to FALSE
+  1443	401433'	301 01 0 00 000141 		cail	t,"a"		; Check for lower-case
+  1444	401434'	303 01 0 00 000172 		caile	t,"z"		;  letters first
+  1445	401435'	304 00 0 00 000000 		  caia			; No!  so skip and continue
+  1446	401436'	263 00 0 00 000000 		 popj	s,		; Yes! so return FALSE
+  1447	401437'	301 01 0 00 000101 		cail	t,"A"		; Check for upper-case
+  1448	401440'	303 01 0 00 000132 		caile	t,"Z"		;  letters next
+  1449	401441'	304 00 0 00 000000 		  caia			; No!  so skip and continue
+  1450	401442'	263 00 0 00 000000 		 popj	s,		; Yes! so return FALSE
+  1451	401443'	301 01 0 00 000060 		cail	t,"0"		; Check for numbers
+  1452	401444'	303 01 0 00 000071 		caile	t,"9"		;  last of all
+  1453	401445'	201 03 0 00 000001 		  movei	v,1		; No!  so return TRUE
+  1454	401446'	263 00 0 00 000000 		 popj	s,		; Yes! so return FALSE
+  1455
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 34
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	PBreak	- whether we are at a paragraph break
+
+  1456					Subttl	VUEMAC	PBreak	- whether we are at a paragraph break
+  1457
+  1458					;;
+  1459					;;   A paragraph break occurs at:
+  1460					;;	the beginning of the buffer
+  1461					;;	the end of the buffer
+  1462					;;	a formfeed
+  1463					;;	a carriage return followed by a blank line
+  1464					;;	a carriage return followed by @ or .
+  1465					;;			(SCRIBE or PUB commands)
+  1466
+  1467					;global routine pbreak (i) = begin
+  1468					;    register char;
+  1469					;    if (.i leq 1) or				! beginning-of-buffer
+  1470					;       (.i geq .hend-1+.lowend-.hbot)		! end-of-buffer
+  1471					;     then return 1;
+  1472					;    char_ getchxr(.i);
+  1473					;    if "?L" eql .char				! get char
+  1474					;	    then return 1			! ff
+  1475					;	    else if "?M" eql .char
+  1476					;		  then if .i eql .hend-.hbot+.lowend-1
+  1477					;			then return 1		! cr end-of-buffer
+  1478					;			else if blankline(.i+1)
+  1479					;			      then return 1	! cr [wh] cr/end-of-buffer
+  1480					;			      else if fmtchxr(.i+1)
+  1481					;				   then return 1;	! cr @/.
+  1482					;    return 0
+  1483					;end;
+  1484
+  1485	401447'				PBREAK::
+  1486	401447'	200 01 0 00 000000 		move	t,s		; Get the character position
+  1487	401450'	200 01 0 01 777777 		move	t,-1(t)		;   from the top of the stack
+  1488	401451'	200 03 0 00 004551'		move	v,hend		; Get end of buffer space
+  1489	401452'	274 03 0 00 004552'		sub	v,hbot		; Minus end of buffer text
+  1490	401453'	270 03 0 00 004554'		add	v,lowend	; Plus current loc
+  1491	401454'	303 01 0 00 000001 		caile	t,1		; Char pos leq 1
+  1492	401455'	311 01 0 00 000003 		caml	t,v		;   or outside buffer
+  1493	401456'	254 00 0 00 401355'		  jrst	L.RET1		; Yes! ----- Return TRUE (exceeded limits)
+  1494	401457'	261 00 0 00 000001 		push	s,t		; Push for GET-CHAR
+  1495	401460'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1496	401461'	262 00 0 00 000001 		pop	s,t		; restore position argument
+  1497	401462'	306 03 0 00 000014 		cain	v,14		; Compare if FF
+  1498	401463'	254 00 0 00 401355'		  jrst	L.RET1		;   jump if TRUE (PARA-END)
+  1499	401464'	302 03 0 00 000015 		caie	v,15		; Compare with CR
+  1500	401465'	254 00 0 00 401356'		  jrst	L.RET0		;   jump if FALSE (not PARA-END)
+  1501	401466'	340 01 0 00 000000 		aoj	t,		; Increment pointer
+  1502	401467'	261 00 0 00 000001 		push	s,t		;  and save it for call
+  1503	401470'	260 00 0 00 401367'		pushj	s,FMTCHXR	;  to check for "@" or "."
+  1504	401471'	262 00 0 00 000001 		pop	s,t		; Restore pointer
+  1505	401472'	326 03 0 00 401355'		 jumpn	v,L.RET1	; If non-zero we have a match
+  1506	401473'	254 00 0 00 401500'		jrst	BL.LN1		; else check for blank line (next page)
+  1507
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 35
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	BlankLine	- checks for blank space to next EOL
+
+  1508					Subttl	VUEMAC	BlankLine	- checks for blank space to next EOL
+  1509
+  1510					;routine blankline (i) = begin
+  1511					;    register char;
+  1512					;    if .i lss 1 or .i geq .hend-.hbot+.lowend-1
+  1513					;     then return 0;
+  1514					;    char_ getchxr(.i);
+  1515					;    while not eolbreak( .char )
+  1516					;     do begin
+  1517					;       if not whtbreak( .char )
+  1518					;	 then return 0;
+  1519					;       i _ .i + 1;
+  1520					;       if .i geq .hend-.hbot+.lowend-1
+  1521					;	 then exitloop;
+  1522					;	char_ getchxr(.i);
+  1523					;     end;
+  1524					;    return 1
+  1525					;end;
+  1526
+  1527	401474'				BLANKLINE:
+  1528	401474'	200 01 0 00 000000 		move	t,s		; Get the character position
+  1529	401475'	200 01 0 01 777777 		move	t,-1(t)		;   from the top of the stack
+  1530	401476'	305 01 0 00 000001 		caige	t,1		; Char pos geq 1
+  1531	401477'	254 00 0 00 401356'		  jrst	L.RET0		; No! ----- Return FALSE (too small)
+  1532	401500'	200 03 0 00 004551'	BL.LN1:	move	v,hend		; Get end of buffer space
+  1533	401501'	274 03 0 00 004552'		sub	v,hbot		; Minus end of buffer text
+  1534	401502'	270 03 0 00 004554'		add	v,lowend	; Plus current loc
+  1535	401503'	311 01 0 00 000003 		caml	t,v		; Char pos inside buffer
+  1536	401504'	254 00 0 00 401355'		  jrst	L.RET1		; No! ----- Return TRUE (ran out)
+  1537
+  1538					; *** Later think about just "Ldb v,a" instead of GETCHXR call ***
+  1539
+  1540	401505'	261 00 0 00 000001 		push	s,t		; Push for GET-CHAR
+  1541	401506'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1542	401507'	262 00 0 00 000001 		pop	s,t		; restore position argument
+  1543	401510'	302 03 0 00 000015 		caie	v,15		; Compare with CR
+  1544	401511'	306 03 0 00 000014 		cain	v,14		;   and FF
+  1545	401512'	254 00 0 00 401355'		  jrst	L.RET1		; jump if TRUE (EOL)
+  1546	401513'	302 03 0 00 000040 		caie	v," "		; Compare with space
+  1547	401514'	306 03 0 00 000011 		cain	v,11		;   and Tab
+  1548	401515'	304 00 0 00 000000 		  caia			; whitespace! skip on..
+  1549	401516'	254 00 0 00 401356'		 jrst	L.RET0		; return false
+  1550	401517'	344 01 0 00 401500'		aoja	t,BL.LN1	; loop till hit EOL or run out
+  1551
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 36
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	FindBreak	- finds first break before pointer
+
+  1552					Subttl	VUEMAC	FindBreak	- finds first break before pointer
+  1553
+  1554					; findbreak is called with a character position.  it returns the position
+  1555					; of the first character following the paragraph break at or before the
+  1556					; given argument.
+  1557					;
+  1558					;routine findbreak (i) = 
+  1559					;    decr j from .i to 1 do if apbreak(.j) then return .j;
+  1560
+  1561	401520'				FINDBREAK:
+  1562	401520'	200 01 0 00 000000 		move	t,s		; Get initial "I"
+  1563	401521'	200 01 0 01 777777 		move	t,-1(t)		;  from the stack
+  1564	401522'	322 01 0 00 401530'	FIND.0:	jumpe	t,FIND.1	; Finished when reached 0
+  1565	401523'	261 00 0 00 000001 		push	s,t		; Push again... See if at
+  1566	401524'	260 00 0 00 401536'		pushj	s,APBREAK	;   end of paragraph break
+  1567	401525'	262 00 0 00 000001 		pop	s,t		; Pop argument
+  1568	401526'	336 00 0 00 000003 		skipn	v		; Find a break?
+  1569	401527'	367 01 0 00 401522'		  sojg	t,FIND.0	; No! ----- Keep looking
+  1570	401530'	200 03 0 00 000001 	FIND.1:	move	v,t		; Report home with the newxs
+  1571	401531'	263 00 0 00 000000 		popj	s,		; ...
+  1572
+  1573
+  1574	401532'	634 03 0 00 000003 	L1.RT0:	tdza	v,v		; Clear flag and skip
+  1575	401533'	201 03 0 00 000001 	L1.RT1:	movei	v,1		; Set flag to TRUE
+  1576	401534'	274 00 0 00 401724'		sub	s,[1,,1]	; Pop argument off stack
+  1577	401535'	263 00 0 00 000000 		popj	s,		; and return
+  1578
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 37
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	APBreak	- checks for "after" a paragraph break
+
+  1579					Subttl	VUEMAC	APBreak	- checks for "after" a paragraph break
+  1580
+  1581					; ----------------------------------------------------------------------
+  1582					; apbreak returns 1 if the given character position is the end of
+  1583					; a legal paragraph break
+  1584					; ----------------------------------------------------------------------
+  1585					;
+  1586					;global routine apbreak (i) = begin register char;
+  1587					;	if (.i leq 1) or				! beginning of buffer
+  1588					;	   (.1 geq .hend-1+.lowend-.hbot)		! end of buffer
+  1589					;	 then return 1;
+  1590					;	char_ getchxr(.i);
+  1591					;	if "?L" eql getchxr(.i-1) or			! beginning of page
+  1592					;	   "?L" eql .char				! end of page
+  1593					;	 then return 1;
+  1594					;	if "?M" neq getchxr(.i-1) then return 0;	! prev cr
+  1595					;	return if .char eql "@" or .char eql "."
+  1596					;	     then 1					! cr/ff  @/.
+  1597					;	     else blankprev(.i-2);			! blank cr
+  1598					;    end;
+  1599
+  1600	401536'				APBREAK::
+  1601	401536'	200 01 0 00 000000 		move	t,s		; Get the character position
+  1602	401537'	200 01 0 01 777777 		move	t,-1(t)		;   from the top of the stack
+  1603	401540'	200 03 0 00 004551'		move	v,hend		; Get end of buffer space
+  1604	401541'	274 03 0 00 004552'		sub	v,hbot		; Minus end of buffer text
+  1605	401542'	270 03 0 00 004554'		add	v,lowend	; Plus current loc
+  1606	401543'	303 01 0 00 000001 		caile	t,1		; Char pos leq 1
+  1607	401544'	311 01 0 00 000003 		caml	t,v		;    or outside buffer
+  1608	401545'	254 00 0 00 401355'		  jrst	L.RET1		; Yes! ----- Return TRUE (out of range)
+  1609	401546'	261 00 0 00 000001 		push	s,t		; Push for GET-CHAR
+  1610	401547'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1611	401550'	262 00 0 00 000001 		pop	s,t		; restore position argument
+  1612	401551'	306 03 0 00 000014 		cain	v,14		; Compare with FF
+  1613	401552'	254 00 0 00 401355'		  jrst	L.RET1		; jump if TRUE (EOL)
+  1614	401553'	360 01 0 00 000000 		soj	t,		; Backup a character
+  1615	401554'	261 00 0 00 000003 		push	s,v		; Save this character for later
+  1616	401555'	261 00 0 00 000001 		push	s,t		;   and setup to look at
+  1617	401556'	260 00 0 00 401256'		pushj	s,GETCHXR	;   the previous character.
+  1618	401557'	262 00 0 00 000001 		pop	s,t		; Restore counter
+  1619	401560'	306 03 0 00 000014 		cain	v,14		; Compare with FF
+  1620	401561'	254 00 0 00 401533'		  jrst	L1.RT1		; A match! -- Pop S & return TRUE
+  1621	401562'	302 03 0 00 000015 		caie	v,15		; Compare with CR
+  1622	401563'	254 00 0 00 401532'		  jrst	L1.RT0		; No! ----- Pop S & return FALSE
+  1623	401564'	262 00 0 00 000003 		pop	s,v		; Yes! ---- Check for CR, "@" or "."
+  1624	401565'	302 03 0 00 000056 		caie	v,"."		; PUB or RUNOFF user?
+  1625	401566'	306 03 0 00 000100 		cain	v,"@"		;  ou peut-etre SCRIBE?
+  1626	401567'	254 00 0 00 401355'		  jrst	L.RET1		; We allow it for now.
+  1627	401570'	306 03 0 00 000015 		cain	v,15		; Compare with CR
+  1628	401571'	254 00 0 00 401355'		  jrst	L.RET1		; Hmmmm. usually not possible.
+  1629	401572'	364 01 0 00 401602'		soja	t,BL.PV1	; Well, look for prev. blank line
+  1630
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 38
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	BlankPrev	- checks for previous blank line
+
+  1631					Subttl	VUEMAC	BlankPrev	- checks for previous blank line
+  1632
+  1633					;routine blankprev (i) = begin
+  1634					;    register char;
+  1635					;    if .i lss 1 or .i geq .hend-.hbot+.lowend-1
+  1636					;     then return 1;
+  1637					;    char_ getchxr(.i);
+  1638					;    while not eolbreak( .char )
+  1639					;     do begin
+  1640					;	if not whtbreak( .char )
+  1641					;	 then return 0;
+  1642					;	.i _ .i - 1;
+  1643					;	if .i lss 1 then exitloop;
+  1644					;	char_ getchxr(.i);
+  1645					;     end;
+  1646					;    return 1
+  1647					;end;
+  1648
+  1649	401573'				BLANKPREV:
+  1650	401573'	200 01 0 00 000000 		move	t,s		; Get the character position
+  1651	401574'	200 01 0 01 777777 		move	t,-1(t)		;   from the top of the stack
+  1652	401575'	200 03 0 00 004551'		move	v,hend		; Get end of buffer space
+  1653	401576'	274 03 0 00 004552'		sub	v,hbot		; Minus end of buffer text
+  1654	401577'	270 03 0 00 004554'		add	v,lowend	; Plus current loc
+  1655	401600'	311 01 0 00 000003 		caml	t,v		; Char pos inside buffer
+  1656	401601'	254 00 0 00 401356'		  jrst	L.RET0		; No! ----- Return FALSE (not enough)
+  1657	401602'	305 01 0 00 000001 	BL.PV1:	caige	t,1		; Char pos geq 1
+  1658	401603'	254 00 0 00 401355'		  jrst	L.RET1		; No! ----- Return TRUE (ran out)
+  1659	401604'	261 00 0 00 000001 		push	s,t		; Push for GET-CHAR
+  1660	401605'	260 00 0 00 401256'		pushj	s,GETCHXR	; Get the char
+  1661	401606'	262 00 0 00 000001 		pop	s,t		; restore position argument
+  1662	401607'	302 03 0 00 000015 		caie	v,15		; Compare with CR
+  1663	401610'	306 03 0 00 000014 		cain	v,14		;   and FF
+  1664	401611'	254 00 0 00 401355'		  jrst	L.RET1		; jump if TRUE (EOL)
+  1665	401612'	302 03 0 00 000040 		caie	v," "		; Compare with space
+  1666	401613'	306 03 0 00 000011 		cain	v,11		;   and Tab
+  1667	401614'	304 00 0 00 000000 		  caia			; whitespace! skip on..
+  1668	401615'	254 00 0 00 401356'		 jrst	L.RET0		; return false
+  1669	401616'	364 01 0 00 401602'		soja	t,BL.PV1	; loop till hit EOL or run out
+  1670
+  1671
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 39
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Dmpin/Dmpout - (Chan, Addr, Size)
+
+  1672					Subttl	VUEMAC	Dmpin/Dmpout - (Chan, Addr, Size)
+  1673
+  1674					; args are channel,address,size
+  1675	401617'	200 03 0 00 000000 	dmpin:	move	v,s
+  1676	401620'	210 04 0 03 777777 		movn	a,-1(v)		; get and negate the size
+  1677	401621'	504 04 0 00 000004 		hrl	a,a		; put into left half
+  1678	401622'	200 03 0 03 777776 		move	v,-2(v)		; get the address
+  1679	401623'	360 03 0 00 000000 		soj	v,		; minus 1 for IOWD
+  1680	401624'	540 04 0 00 000003 		hrr	a,v		; finish [-size,,addr-1]
+  1681	401625'	400 05 0 00 000000 		setz	b,		; clear  for zero word
+  1682	401626'	201 03 0 00 000001 		movei	v,1		; assume success
+  1683	401627'	056 02 0 00 000004 		in	2,a		; dump mode block
+  1684	401630'	263 00 0 00 000000 		  popj	s,
+  1685	401631'	201 03 0 00 000000 		movei	v,0		;error return -> lost.
+  1686	401632'	263 00 0 00 000000 		popj	s,
+  1687
+  1688	401633'	200 03 0 00 000000 	dmpout:	move	v,s
+  1689	401634'	210 04 0 03 777777 		movn	a,-1(v)		; get and negate the size
+  1690	401635'	504 04 0 00 000004 		hrl	a,a		; put into left half
+  1691	401636'	200 03 0 03 777776 		move	v,-2(v)		; get the address
+  1692	401637'	360 03 0 00 000000 		soj	v,		; minus 1 for IOWD
+  1693	401640'	540 04 0 00 000003 		hrr	a,v		; finish [-size,,addr-1]
+  1694	401641'	400 05 0 00 000000 		setz	b,		; clear  for zero word
+  1695	401642'	201 03 0 00 000001 		movei	v,1		; assume success
+  1696	401643'	067 02 0 00 000004 		output	2,a		; dump mode block
+  1697	401644'	263 00 0 00 000000 		popj	s,
+  1698
+  1699
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 40
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Error message routines - E$$COD, E$$NEC
+
+  1700					Subttl	VUEMAC	Error message routines - E$$COD, E$$NEC
+  1701
+  1702	401645'				E$$COD:	Outstr	[Asciz\
+  1703					?
+  1704					?VUECOD	Cannot Open Device for file rename(s) - Please recover with Olde buffer
+  1705	401645'	051 03 0 00 401725'	\]
+  1706	401646'	254 00 0 00 401060'			Jrst	Quit			; Exit
+  1707
+  1708	401647'				E$$NEC:	Outstr	[Asciz\
+  1709					?
+  1710					?VUENEC Not enough core to edit file
+  1711	401647'	051 03 0 00 401747'	\]
+  1712	401650'	254 00 0 00 401060'		jrst	Quit
+  1713
+  1714
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 41
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Error message routines - E$$COD, E$$NEC
+
+  1715	000000'					Reloc	; 0
+  1716
+  1717	000000'	000000	000022		scrlen: ^D18
+  1718	000001'	000000	000022		scrsze:	^D18
+  1719	000002'	000000	000022		modpos: ^D18
+  1720	000003'	000000	000033		maxss:	^D27			; Make sure this = # used * 132
+  1721	000004'				screen:	block	^D27*<^D135/5>	; Change 25==>27 hazeltine 2000
+  1722
+  1723			000144		ttybfs=^D100			; tty buffer size in words.
+  1724	001335'	000000	000012		radix:	^d10			; initially decimal
+  1725	001336'	000000	000000		putwrt:	0			; flag for put/wrt routines
+  1726	001337'	000000	000000		ws$ptr:	0			; Storage - Pointer for Writestring/Putstring
+  1727	001340'	000000	000000		altptr:	0			; Alternate buffer pointer - initially 0
+  1728	001341'	44 11 0 00 001342'	bufptr:	Point ^D9,ttybuf	; Pointer for tty output
+  1729	001342'				ttybuf: block ttybfs		; tty buffer
+  1730	001506'	000000	000617		ttysfd: 4*ttybfs-1		; tty buffer size
+  1731
+  1732			000050		qwsize==^D40			; 40 * 4-chars (9-bit bytes)
+  1733	001507'				mcrdef:	block	1		; flag for macro by define
+  1734	001510'				mcrptr:	block	1		; pointer into qspace for define
+  1735	001511'				qspace: block ^D26*qwsize	; 160 chars by 26 macros.
+  1736
+  1737	003531'	000000	003532'		distbl:	.+1			; pointer to table
+  1738	003532'					block ^D512		; command dispatch table
+  1739
+  1740	004532'	000000	000001		physpos: 1
+  1741	004533'	000000	000001		physlin: 1
+  1742	004534'	000000	000010		tabsize: ^D8
+  1743	004535'	000000	000117		linesz: ^D79
+  1744	004536'	000000	000000		silent:	0			; quiet flag - 0 is noisy - #0 is quiet
+  1745	004537'	000000	000000		cmdlvl: 0
+  1746	004540'	000000	000000		clulin:	0
+  1747	004541'	000000	000000		clupos: 0
+  1748	004542'	000000	000001		scrmod: 1
+  1749	004543'	000000	000001		muline: 1
+  1750	004544'	777777	777777		ocline: -1
+  1751	004545'	000000	000000		comchar:0		; last read command character (caviat hacker)
+  1752	004546'	000000	000000		repeat:	0		; repeat count for commands
+  1753	004547'	000000	000000		p:	0		; addr where the current buffer starts
+  1754
+  1755	004550'				DmpBfr::		; --- This is the buffer environment ---
+  1756	004550'	000000	000000		pcopy:	0		; address of buffer begin (copy of p:)
+  1757	004551'	000000	000000		hend:	0		; high end of buffer
+  1758	004552'	000000	000000		hbot:	0		; high bottom (first point after gap)
+  1759	004553'	000000	000000		hptr:	0		; Pointer to char(.lowend+1) after-gap
+  1760	004554'	000000	000000		lowend:	0		; low end of buffer
+  1761	004555'	000000	000001		lowbot:	1		; low bottom (always 1)
+  1762	004556'	000000	000000		lowptr:	0		; Pointer to char(.lowend) before-gap
+  1763	004557'	000000	000000		bfrlin:	0		; line user is on
+  1764	004560'	000000	000000		bfrpag:	0		; page user is on
+  1765	004561'	000000	000000		scroff: 0		; offset of buffer in screen.
+  1766	004562'	000000	000001		curlin:	1		; current line
+  1767	004563'	000000	000001		curpag:	1		; current page
+  1768	004564'				UsrPPN:			; User GFD'd PPN  -- only 1 word ---
+  1769	004564'	000000	000000		ppn: 0			; User GFD'd PPN
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 41-1
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Error message routines - E$$COD, E$$NEC
+
+  1770	004565'	000000	000000		vuetyp:	0		; VUE type
+  1771	004566'	000000	000000		submod:	0		; SUB Mode
+  1772	004567'	000000	000000		mark:	0		; Remember mark in each, across buffers
+  1773
+  1774	004570'	44 63 53 00 00 00 	filblk: sixbit/dsk/	; device
+  1775	004571'	44 45 54 45 64 45 		sixbit/delete/	; file
+  1776	004572'	000000	000000			Exp 0,0,0,0	; ext, prot-cre, ppn, extra
+  1777	004573'	000000	000000
+  1778	004574'	000000	000000
+  1779	004575'	000000	000000
+  1780	004576'	000000	000000			Exp 0,0		; Username (2w)
+  1781	004577'	000000	000000
+  1782			000030		DmpBsz==.-DmpBfr	; Calculate the size
+  1783	004600'				Block	200-DmpBsz	; --- This is the end of the buffer environment ---
+  1784
+  1785	004750'	000000	000000		save: 0
+  1786
+  1787	004751'	000000	000000		ttytyp: 0			; Terminal type (numeric)
+  1788	004752'	000000	000000		ttype:	0			; Terminal type in sixbit
+  1789	004753'	000000	000000		tspeed:	0			; Terminal output speed
+  1790
+  1791	004754'	000 00 0 00 000000 	Usrprv:	z			; User privilage word
+  1792	004755'	000 00 0 00 000000 	Usrlic:	z			; User license word
+  1793	004756'	000 00 0 00 000000 	Usrnam:	z			; User program name
+  1794	004757'	000 00 0 00 000000 	UsrAUN:	z			; User Account Number
+  1795	004760'	000 00 0 00 000000 	UsrFPN:	z			; User FRAME PPN
+  1796
+  1797	004761'	000000	000000		flush:	0
+  1798	004762'	000000	000000		base:	0
+  1799	004763'	000000	000000		precmd:	0			; possible command character (readcc)
+  1800	004764'	000000	000000		premeta:0			; meta-seen flag for readch
+  1801	004765'	000000	000000		preext:	0			; extend-seen flag for readch
+  1802	004766'				tymtty:	block	1		; Remember tty characteristics GETLCH
+  1803	004767'				inirvx:	block	1		; Remember tty characteristics XON
+  1804	004770'	000000	000000		nowait:	0			; decide whether to wait in Reader
+  1805
+  1806	004771'				dskbfh:	block	3
+  1807	004774'				dskbuf:	block	200		; Disk buffer for some dump i/o
+  1808
+  1809	005174'				sst:	block	^D132		; Search string
+  1810	005400'				rst:	block	^D132		; Replace string
+  1811
+  1812	005604'	44 07 0 00 005612'	rsrptr:	point	7,rsrbuf	;pointer into buffer
+  1813	005605'	44 07 0 00 005612'	rsrpnt:	point	7,rsrbuf	;pointer into buffer
+  1814	005606'				rsrcnt:	block	1		;count character space
+  1815	005607'				rsrchr:	block	1		;Rescan break character, -;(
+  1816	005610'				rsrwrd:	block	1
+  1817	005611'	44 06 0 00 005610'	rsrwpt:	point	6,rsrwrd
+  1818	005612'				rsrbuf:	block	<^D135*2>/5	;Room for 2 lines at 132 chars
+  1819			005700'			rsrend=.
+  1820			000416			rsrmax=<rsrend-rsrbuf>*5 ;# characters maximum
+  1821
+  1822	005700'				rsrstk:	block	1		;place for rescan pointer
+  1823
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 42
+VIEW	MAC	24-Aug-71 17:07		VUEMAC	Error message routines - E$$COD, E$$NEC
+
+  1824
+  1825	005701'	42 41 53 00 00 00 	bakx: sixbit/bak/
+  1826	005702'	44 63 53 00 00 00 	defdsk: sixbit/dsk/
+  1827	005703'	000000	000000		zapdev:	0
+  1828	005704'	44 63 53 00 00 00 		sixbit/dsk/
+  1829	005705'	000000	000000			0
+  1830
+  1831	005706'	44 63 53 00 00 00 	bfblk1:	sixbit	/dsk/
+  1832	005707'	55 41 51 56 00 00 		sixbit	/main/
+  1833	005710'	66 65 45 00 00 00 		sixbit	/vue/
+  1834	005711'	000000	000000			Exp 0,0,0
+  1835	005712'	000000	000000
+  1836	005713'	000000	000000
+  1837	005714'	000000	000000			Exp 0,0		; Username
+  1838	005715'	000000	000000
+  1839
+  1840	005716'	44 63 53 00 00 00 	bfblk2:	sixbit	/dsk/
+  1841	005717'	55 41 51 56 00 00 		sixbit	/main/
+  1842	005720'	66 65 45 00 00 00 		sixbit	/vue/
+  1843	005721'	000000	000000			Exp 0,0,0
+  1844	005722'	000000	000000
+  1845	005723'	000000	000000
+  1846	005724'	000000	000000			Exp 0,0		; Username
+  1847	005725'	000000	000000
+  1848
+  1849	005726'	44 63 53 00 00 00 	autblk: sixbit/dsk/
+  1850	005727'	66 65 45 00 00 00 		sixbit/vue/
+  1851	005730'	64 55 60 00 00 00 		sixbit/tmp/
+  1852	005731'	000000	000000			Exp 0,0,0
+  1853	005732'	000000	000000
+  1854	005733'	000000	000000
+  1855	005734'	000000	000000			Exp 0,0		; Username
+  1856	005735'	000000	000000
+  1857
+  1858	005736'	44 63 53 00 00 00 	modblk:	sixbit/dsk/
+  1859	005737'	51 56 51 64 00 00 		sixbit/init/
+  1860	005740'	45 70 45 00 00 00 		sixbit/exe/
+  1861	005741'	000000	000000			Exp 0,0,0
+  1862	005742'	000000	000000
+  1863	005743'	000000	000000
+  1864	005744'	000000	000000			Exp 0,0		; Username
+  1865	005745'	000000	000000
+  1866
+  1867
+  1868	401651'					Reloc	; 400000		; Literals, etc should be shareable
+  1869
+  1870						End
+
+NO ERRORS DETECTED
+
+HI-SEG. BREAK IS 401760
+PROGRAM BREAK IS 005746
+CPU TIME USED 01:28.940
+
+12P CORE USED
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page S-1
+VIEW	MAC	24-Aug-71 17:07		SYMBOL TABLE
+
+A		000004		EOLBRE		401351'	ent	LEFTMA		400674'	ext	PUTCHZ		400555'		
+ALTPTR		001340'	ent	EOLCHX		401343'	ent	LINESZ		004535'	ent	PUTLSA	047000	777715		
+APBREA		401536'	ent	EOLTYP		401360'	ent	LOWBOT		004555'		PUTNUM		400605'	ent	
+AUTBLK		005726'	ent	ESCVAL		400747'	ext	LOWEND		004554'	ent	PUTOCT		400575'	ent	
+AUXCAL	042000	000000		EXIT	047000	000012		LOWPTR		004556'	ent	PUTPAD		401133'	ent	
+B		000005		F		000002		LRT		401026'		PUTRD0		400626'		
+BADFPN		400021'		FEF		400271'	ent	MAIL		401073'	ent	PUTRDX		400624'	ent	
+BAKX		005701'		FEN		400323'	ent	MARK		004567'	ent	PUTSTR		400641'	ent	
+BASE		004762'	ent	FILBLK		004570'	ent	MAXSS		000003'	ent	PUTWRT		001336'		
+BFBLK1		005706'	ent	FIND.0		401522'		MCRDEF		001507'	ent	QREG		400753'	ent	
+BFBLK2		005716'	ent	FIND.1		401530'		MCRPTR		001510'	ent	QSPACE		001511'		
+BFRLIN		004557'	ent	FINDBR		401520'	ent	METAPR		400360'	ext	QUIET		400534'	ent	
+BFRPAG		004560'	ent	FLUBFR		400563'	ent	MODBLK		005736'	ent	QUIET0		400540'		
+BL.LN1		401500'		FLUSH		004761'	ent	MODPOS		000002'	ent	QUIT		401060'	ent	
+BL.PV1		401602'		FMOVE		401152'		MOVBUF		400227'	ent	QWSIZE		000050	spd	
+BLANKL		401474'	ent	FMOVE0		401163'		MOVEBA		401207'	ent	RADIX		001335'		
+BLANKP		401573'	ent	FMOVE2		401174'		MOVEFO		401152'	ent	READ		400446'	ext	
+BMOVE		401207'		FMOVE4		401203'		MULINE		004543'	ent	READC2		400366'		
+BMOVE0		401221'		FMOVE6		401204'		MUNCHI		400465'	ent	READC4		400374'		
+BMOVE2		401236'		FMTBRE		401375'	ent	MUNCHJ		400470'		READCC		400345'	ent	
+BMOVE4		401245'		FMTCHX		401367'	ent	MUNCHK		400472'		READCH		400346'	ent	
+BMOVE6		401246'		FTCOMM		000001		MUNCHM		400502'		READCM		400356'		
+BUFPTR		001341'		FTDEBU	777777	777777	spd	MUNCHN		400511'		READDD		400411'		
+C		000006		FTP		401315'	ent	MUNCHO		400514'	ent	READDN		400403'		
+CANTEL		400154'		FTPAE		401317'		NOECHO		400313'		READNX		400347'		
+CASEOK		401336'	ext	FTPLP		401323'		NOREL		401270'		READPE		400374'		
+CHROUT		400656'		FTPWON		401341'		NOREL2		401311'		READPM		400374'		
+CLULIN		004540'	ent	GETAB		401112'		NOWAIT		004770'	ent	RELCOR		400204'	ent	
+CLUPOS		004541'	ent	GETAUN		401111'	ent	OBUFF		401036'		REPEAT		004546'	ent	
+CMDLVL		004537'	ent	GETAUX		401066'		OCLINE		004544'	ent	REPSTK		000000	ext	
+CMDSTK		400355'	ext	GETCHX		401256'	ent	OKDELF		400150'		RERESC		400774'		
+COMCHA		004545'	ent	GETFPN		401110'		OKRENF		400137'		RESCAN	051400	000000		
+CORECH		400242'	ent	GETJOB		401120'	ent	OUTSTR	051140	000000		RESCN		401000'		
+CORESI		400217'	ent	GETLCH	051300	000000		P		004547'	ent	RESET		400000'	ent	
+CPOPJ		400322'		GETLEN		401071'	ent	PBREAK		401447'	ent	RESTED		400155'		
+CTRLXR		401025'	ext	GETLIC		401104'		PCOPY		004550'	ent	RESTST		401040'		
+CTRLXV		401034'	ext	GETNAM		401102'		PHYSLI		004533'	ent	RET0		400343'		
+CUCL		400167'	ent	GETPPN		401115'	ent	PHYSPO		004532'	ent	RET1		400342'		
+CURLIN		004562'	ent	GETPRV		401106'		PJOB	047000	000030		REVBLT		400264'		
+CURPAG		004563'		GETTAB	047000	000041		PJRST	254000	000000		RFILE		401025'		
+D		000007		GETTTY		401064'	ent	PLOOP		400517'		RPGBLK		400176'		
+DEFDSK		005702'	ent	GETWID		401065'	ent	POPIO		400463'	ext	RSRBUF		005612'		
+DELF		400100'		GOXY		400705'	ext	POPOUT		400463'		RSRCHR		005607'	ent	
+DELVAL		000000	ext	HBOT		004552'	ent	PPN		004564'	ent	RSRCNT		005606'		
+DISTBL		003531'	ent	HEND		004551'	ent	PRECMD		004763'		RSREND		005700'		
+DMPBFR		004550'	ent	HIBER	047000	000072		PREEXT		004765'		RSRMAX		000416		
+DMPBSZ		000030	sen	HPTR		004553'	ent	PREMET		004764'		RSRPNT		005605'		
+DMPIN		401617'	ent	INIRVX		004767'		PUTALT		400561'		RSRPTR		005604'	ent	
+DMPOUT		401633'	ent	IO.FCS		000100	spd	PUTBCD		401122'	ent	RSRSTK		005700'	ent	
+DORESC		400765'	ent	IO.NEC		000200	spd	PUTBF		400531'		RSRWPT		005611'		
+DSKBFH		004771'	ent	IO.NEE		000400	spd	PUTC		400524'		RSRWRD		005610'		
+DSKBUF		004774'	ent	L.RET0		401356'		PUTCC		400522'		RST		005400'	ent	
+E		000010		L.RET1		401355'		PUTCH		400542'	ent	RUN	047000	000035		
+E$$COD		401645'		L1.RT0		401532'		PUTCHI		400544'		RUNCCA		400172'		
+E$$NEC		401647'		L1.RT1		401533'		PUTCHV		400546'		RUNCCL		400163'		
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page S-2
+VIEW	MAC	24-Aug-71 17:07		SYMBOL TABLE
+
+RUNRPG		400170'		WLOSS0		400673'		
+S		000000		WLOSS2		400710'		
+SAVE		004750'		WLOSS4		400716'		
+SCREEN		000004'	ent	WLOSSV		400665'		
+SCRLEN		000000'	ent	WRITEL		400661'	ent	
+SCRMOD		004542'	ent	WRITES		400642'	ent	
+SCROFF		004561'	ent	WRTNUM		400606'	ent	
+SCRSZE		000001'	ent	WRTOCT		400576'	ent	
+SETLCH	051340	000000		WS$LP		400652'		
+SETMOD	047000	777752		WS$PTR		001337'		
+SILENT		004536'	ent	XPREFI		400366'	ext	
+SKPINL	051600	000000		ZAPDEV		005703'		
+SLEEP	047000	000031		.AXCFS		000064	spd	
+SOSMOD		401360'	ext	.AXI8C		000000	spd	
+SST		005174'	ent	.AXI8S		000001	spd	
+SUBMOD		004566'	ent	.AXICS		000045	spd	
+T		000001		.AXO8I		000004	spd	
+TABLE		401275'		.AXOBR		000016	spd	
+TABSIZ		004534'	ent	.AXOST		000052	spd	
+TATTLE		400060'		.AXPTR		000005	spd	
+THEREP		401303'	ent	.AXRVX		000055	spd	
+TOPROM		400415'	ext	.AXSIC		000010	spd	
+TSPEED		004753'	ent	.AXSYB		000012	spd	
+TTYBFS		000144		.AXTTP		000100	spd	
+TTYBUF		001342'		.AXWID		000027	spd	
+TTYIDL		400340'	ent	.GTAUN	777777	777755	spd	
+TTYPE		004752'	ent	.GTFPN	777777	777753	spd	
+TTYSFD		001506'		.GTLIC	777777	777760	spd	
+TTYTYP		004751'	ent	.GTNAM		000003	spd	
+TYMTTY		004766'		.GTPPN		000002	spd	
+UCTRLO		401036'	ext	.GTPRV		000006	spd	
+UPDATE		400731'	ent	.IOBIN		000014	spd	
+UPDCUR		400743'		.IOIMG		000010	spd	
+USEFI1		400445'		.JBDDT		000074		
+USEFIL		400433'		.JBFF		000121		
+USETTC		400426'		.JBREL		000044		
+USETTY		400420'		.JBVER		000137		
+USRAUN		004757'		
+USRFPN		004760'		
+USRLIC		004755'		
+USRNAM		004756'		
+USRPPN		004564'		
+USRPRV		004754'		
+V		000003		
+VFILE		401034'		
+VUECPY		400106'		
+VUEEDT		000162	spd	
+VUEMIN		000000	spd	
+VUETYP		004565'	ent	
+VUEVER		000001	spd	
+VUEWHO		000000	spd	
+WBREAK		401430'	ent	
+WHITES		401421'	ent	
+WHTBRE		401412'	ent	
+WHTCHX		401404'	ent	
+
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+A	   249#	   357	   359	   362	   364	   376	   379	   380	   381	   383	   461	   462	   464	   465
+	   466	   469	   482	   494	   495	   496	   535	   536	   538	   539	   540	   590	   591	   603
+	   604	   605	   606	   607	   609	   610	   611	   612	   613	   614	   616	   617	   619	   620
+	   621	   622	   623	   624	   625	   626	   636	   637	   638	   639	   641	   642	   643	   645
+	   674	   675	   680	   722	   724	   726	   727	   738	   748	   802	   806	   863	   864	   865
+	   866	   867	   868	   869	   870	   871	   906	   910	   911	   912	  1042	  1043	  1044	  1045
+	  1046	  1047	  1048	  1065	  1066	  1068	  1069	  1071	  1073	  1074	  1076	  1082	  1084	  1085
+	  1087	  1088	  1089	  1091	  1096	  1097	  1099	  1110	  1111	  1113	  1114	  1116	  1117	  1119
+	  1120	  1135	  1136	  1138	  1184	  1191	  1193	  1197	  1210	  1211	  1212	  1213	  1214	  1215
+	  1233	  1243	  1244	  1245	  1246	  1247	  1276	  1283	  1284	  1286	  1288	  1289	  1290	  1292
+	  1293	  1294	  1295	  1308	  1309	  1322	  1323	  1324	  1325	  1326	  1331	  1676	  1677	  1680
+	  1683	  1689	  1690	  1693	  1696
+ALTPTR	   277	   842	   855	  1727#
+APBREA	   288	  1566	  1600#
+AUTBLK	   271	  1849#
+B	   250#	   355	   356	   358	   359	   366	   367	   368	   369	   371	   372	   373	   377	   378
+	   380	   387	   388	   390	   391	   401	   402	   480	   481	   492	   493	   803	   804	  1063
+	  1090	  1107	  1108	  1109	  1111	  1112	  1113	  1193	  1201	  1309	  1310	  1312	  1313	  1314
+	  1315	  1316	  1323	  1330	  1681	  1694
+BADFPN	   351	   355#
+BAKX	  1825#
+BASE	   272	  1798#
+BFBLK1	   281	  1831#
+BFBLK2	   281	  1840#
+BFRLIN	   275	  1221	  1228	  1259	  1266	  1763#
+BFRPAG	   275	  1227	  1265	  1764#
+BL.LN1	  1506	  1532#	  1550
+BL.PV1	  1629	  1657#	  1669
+BLANKL	   288	  1527#
+BLANKP	   288	  1649#
+BMOVE	  1240#
+BMOVE0	  1250#	  1276
+BMOVE2	  1258	  1263#
+BMOVE4	  1262	  1270#
+BMOVE6	  1264	  1271#
+BUFPTR	   847	   864	   867	   871	  1728#
+C	   251#	   386	   389	   390	   393	   399	   403	   406	   407	   423	   424	   425	   430	   432
+	   435	   437	   439	   442	   443	   444	   446	   447	   776	   786	   801	   802	   803	   806
+	   809	   810	   812	  1194	  1195	  1316	  1325	  1329
+CANTEL	   416	   424	   460#
+CASEOK	   292#	  1340
+CHROUT	   900	   914	   940	   943#
+CLULIN	   271	  1746#
+CLUPOS	   271	  1747#
+CMDLVL	   280	   674	  1745#
+CMDSTK	   291#	   675	   680
+COMCHA	   273	  1751#
+CORECH	   282	   571#	   780
+CORESI	   282	   534#	   553	   577
+CPOPJ	   584	   628#	   939	  1021	  1026	  1028	  1209	  1242
+CTRLXR	   291#	  1094
+CTRLXV	   291#	  1102
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+CUCL	   272	   491#
+CURLIN	   272	  1222	  1229	  1260	  1267	  1766#
+CURPAG	  1767#
+D	   252#	   417	   423	   777	   784	  1196	  1330	  1332	  1336	  1337	  1338
+DEFDSK	   272	  1826#
+DELF	   396	   407#
+DELVAL	   292#
+DISTBL	   281	  1737#
+DMPBFR	   283	  1755#	  1782
+DMPBSZ	   283	  1782#	  1783
+DMPIN	   283	  1675#
+DMPOUT	   283	  1688#
+DORESC	   280	  1053#
+DSKBFH	   277	   781	   783	   784	   786	   787	   788	   789	   807	   809	  1806#
+DSKBUF	   272	  1807#
+E	   253#	   421	   422	   425	   426	   427	   430	   435	   442	   447	   448	   450	   451	   452
+	   453	   455	   456	   480	   481	   482	   492	   493	   495	   778	   779	   794	  1331	  1332
+	  1333	  1334
+E$$COD	  1702#
+E$$NEC	   523	   541	  1708#
+EOLBRE	   286	  1361#	  1435
+EOLCHX	   286	  1354#
+EOLTYP	   286	  1371#
+ESCVAL	   292#	   981	  1027
+F	   247#
+FEF	   271	   603#	  1130
+FEN	   271	   491	   635#	  1127
+FILBLK	   272	  1774#
+FIND.0	  1564#	  1569
+FIND.1	  1564	  1570#
+FINDBR	   288	  1561#
+FLUBFR	   278	   635	   673	   846	   850	   863#
+FLUSH	   271	  1797#
+FMOVE	  1207#
+FMOVE0	  1216#	  1233
+FMOVE2	  1220	  1225#
+FMOVE4	  1232#
+FMOVE6	  1224	  1226	  1233#
+FMTBRE	   286	  1394#
+FMTCHX	   286	  1387#	  1503
+FTCOMM	   265#	  1062	  1078	  1081	  1106
+FTDEBU	   267	   360	   375
+FTP	   289	  1322#
+FTPAE	  1317	  1324#
+FTPLP	  1329#	  1333	  1342
+FTPWON	  1329	  1343#
+GETAB	  1155	  1157	  1159	  1163#
+GETAUN	   284	   348	  1162#
+GETAUX	  1137#
+GETCHX	   289	  1282#	  1358	  1391	  1414	  1495	  1541	  1610	  1617	  1660
+GETFPN	   344	  1161#
+GETJOB	   284	  1173#
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+GETLEN	   284	  1141#
+GETLIC	   340	  1156#
+GETNAM	   342	  1154#
+GETPPN	   284	   346	  1169#
+GETPRV	   338	  1158#
+GETTTY	   284	  1135#
+GETWID	   284	  1136#
+GOXY	   292#	   977
+HBOT	   275	   572	   581	   583	   779	  1208	  1215	  1249	  1288	  1312	  1489	  1533	  1604	  1653
+	  1758#
+HEND	   275	   515	   558	   582	   587	  1207	  1290	  1488	  1532	  1603	  1652	  1757#
+HPTR	   275	   557	   579	  1216	  1217	  1234	  1251	  1253	  1254	  1256	  1759#
+INIRVX	   608	   617	   644	   645	   646	  1803#
+IO.FCS	   317#	   622
+IO.NEC	   316#	   622
+IO.NEE	   315#	   622
+L.RET0	  1367#	  1373	  1377	  1500	  1531	  1549	  1656	  1668
+L.RET1	  1366#	  1378	  1493	  1498	  1505	  1536	  1545	  1608	  1613	  1626	  1628	  1658	  1664
+L1.RT0	  1574#	  1622
+L1.RT1	  1433	  1575#	  1620
+LEFTMA	   292#	   968
+LINESZ	   273	  1743#
+LOWBOT	  1761#
+LOWEND	   275	   573	   778	   794	  1214	  1240	  1248	  1286	  1289	  1310	  1313	  1490	  1534	  1605
+	  1654	  1760#
+LOWPTR	   275	   556	   793	  1218	  1255	  1272	  1274	  1275	  1277	  1762#
+LRT	  1095#	  1103	  1105
+MAIL	   284	  1146#
+MARK	   276	  1772#
+MAXSS	   276	  1720#
+MCRDEF	   274	   704	   710	  1733#
+MCRPTR	   274	   708	   712	  1734#
+METAPR	   291#	   683
+MODBLK	   285	  1858#
+MODPOS	   277	  1719#
+MOVBUF	   282	   552#
+MOVEBA	   285	  1239#
+MOVEFO	   285	  1206#
+MULINE	   276	  1232	  1270	  1749#
+MUNCHI	   276	   776#
+MUNCHJ	   779#	   795
+MUNCHK	   781#	   792	   798
+MUNCHM	   785	   789#
+MUNCHN	   782	   797#
+MUNCHO	   276	   801#
+NOECHO	   463	   621#
+NOREL	  1287	  1292#
+NOREL2	  1311	  1314#
+NOWAIT	   274	   720	  1804#
+OBUFF	  1077	  1104#
+OCLINE	   276	  1750#
+OKDELF	   429	   432	   437	   443	   455#
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+OKRENF	   434	   441	   446#
+P	   275	   518	   555	   561	   589	  1294	  1315	  1753#
+PBREAK	   288	  1485#
+PCOPY	   283	  1756#
+PHYSLI	   281	   976	  1741#
+PHYSPO	   281	   964	   972	   985	   996	   997	  1740#
+PLOOP	   804#	   811
+POPIO	   291#	   764
+POPOUT	   739	   749	   764#
+PPN	   272	  1769#
+PRECMD	   672	   681	   701	  1799#
+PREEXT	   691	   693	   699	   703	  1801#
+PREMET	   685	   687	   697	   702	  1800#
+PUTALT	   843	   855#
+PUTBCD	   278	  1178#
+PUTBF	   808	   815#
+PUTC	   809#	   816
+PUTCC	   807#	   813
+PUTCH	   278	   838#
+PUTCHI	   840#
+PUTCHV	   842#	   945	   963	   984	   992	   995	  1185	  1200
+PUTCHZ	   844	   850#
+PUTNUM	   278	   887#
+PUTOCT	   278	   878#
+PUTPAD	   278	  1188#
+PUTRD0	   904#	   909
+PUTRDX	   278	   885	   894	   902#
+PUTSTR	   278	   927#
+PUTWRT	   880	   889	   931	   943	  1725#
+QREG	   280	  1040#
+QSPACE	  1040	  1735#
+QUIET	   271	   825#
+QUIET0	   826	   829#
+QUIT	   285	  1127#	  1706	  1712
+QWSIZE	  1047	  1732#	  1735
+RADIX	   882	   891	   904	  1724#
+READ	   291#	   737	   747
+READC2	   684	   689#
+READC4	   690	   697#
+READCC	   274	   672#
+READCH	   274	   673#	   716	   765
+READCM	   681#	   733	   745	   755	   762
+READDD	   707	   710#
+READDN	   682	   704#
+READNX	   674#	   688	   694
+READPE	   692	   696#
+READPM	   686	   695#
+RELCOR	   282	   515#
+REPEAT	   273	  1752#
+REPSTK	   291#
+RERESC	  1063#	  1122
+RESCN	  1068#	  1090	  1093
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+RESET	   277	   337#
+RESTED	   370	   374	   382	   414	   461#
+RESTST	  1089	  1107#
+RET0	   662#	   817
+RET1	   657#	   805
+REVBLT	   562	   590#	   593
+RFILE	  1083	  1094#	  1115	  1118	  1121
+RPGBLK	   480	   492	   499#
+RSRBUF	  1812	  1813	  1818#	  1820
+RSRCHR	   282	  1815#
+RSRCNT	  1814#
+RSREND	  1819#	  1820
+RSRMAX	  1820#
+RSRPNT	  1813#
+RSRPTR	   282	  1812#
+RSRSTK	   282	  1822#
+RSRWPT	  1066	  1091	  1817#
+RSRWRD	  1064	  1065	  1114	  1117	  1120	  1816#	  1817
+RST	   276	  1810#
+RUNCCA	   483	   494#
+RUNCCL	   480#
+RUNRPG	   492#
+S	   245#	   338	   340	   342	   344	   346	   348	   491	   523	   525	   535	   541	   542	   552
+	   553	   554	   575	   576	   577	   578	   594	   628	   635	   644	   646	   647	   663	   673
+	   705	   709	   713	   714	   715	   725	   736	   737	   738	   746	   747	   748	   764	   780
+	   799	   801	   828	   830	   838	   841	   846	   848	   850	   853	   856	   872	   883	   892
+	   896	   898	   900	   901	   903	   905	   907	   909	   910	   912	   933	   934	   940	   957
+	   958	   963	   965	   971	   972	   973	   974	   975	   976	   977	   978	   979	   984	   986
+	   990	   992	   993	   995	   998	  1012	  1030	  1042	  1049	  1057	  1060	  1072	  1094	  1100
+	  1101	  1102	  1104	  1127	  1130	  1131	  1139	  1142	  1152	  1165	  1171	  1174	  1179	  1180
+	  1185	  1186	  1189	  1190	  1196	  1198	  1200	  1202	  1210	  1235	  1243	  1278	  1283	  1285
+	  1291	  1296	  1308	  1322	  1335	  1339	  1341	  1344	  1355	  1357	  1358	  1359	  1362	  1368
+	  1374	  1388	  1390	  1391	  1392	  1395	  1401	  1411	  1413	  1414	  1415	  1418	  1424	  1429
+	  1431	  1432	  1434	  1440	  1446	  1450	  1454	  1486	  1494	  1495	  1496	  1502	  1503	  1504
+	  1528	  1540	  1541	  1542	  1562	  1565	  1566	  1567	  1571	  1576	  1577	  1601	  1609	  1610
+	  1611	  1615	  1616	  1617	  1618	  1623	  1650	  1659	  1660	  1661	  1675	  1684	  1686	  1688
+	  1697
+SAVE	  1785#
+SCREEN	   272	  1721#
+SCRLEN	   281	  1717#
+SCRMOD	   276	  1231	  1269	  1748#
+SCROFF	   281	  1765#
+SCRSZE	   272	  1718#
+SILENT	   271	   825	   827	   829	   840	   895	   902	   932	   956	  1178	  1188	  1744#
+SOSMOD	   292#	  1372
+SST	   276	  1809#
+SUBMOD	   280	  1771#
+T	   246#	   560	   586	   593	   878	   879	   880	   881	   882	   887	   888	   889	   890	   891
+	  1012	  1013	  1014	  1015	  1023	  1024	  1027	  1429	  1430	  1431	  1434	  1440	  1441	  1443
+	  1444	  1447	  1448	  1451	  1452	  1486	  1487	  1491	  1492	  1494	  1496	  1501	  1502	  1504
+	  1528	  1529	  1530	  1535	  1540	  1542	  1550	  1562	  1563	  1564	  1565	  1567	  1569	  1570
+	  1601	  1602	  1606	  1607	  1609	  1611	  1614	  1616	  1618	  1629	  1650	  1651	  1655	  1657
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+	  1659	  1661	  1669
+TABLE	  1293	  1298#	  1316
+TABSIZ	   281	  1018	  1019	  1020	  1742#
+TATTLE	   365	   391#
+THEREP	   289	  1308#
+TOPROM	   292#	   714
+TSPEED	   284	   618	   620	  1789#
+TTYBFS	   868	  1723#	  1729	  1730
+TTYBUF	   865	  1728	  1729#
+TTYIDL	   277	   654#
+TTYPE	   284	  1788#
+TTYSFD	   845	   869	  1730#
+TTYTYP	   276	  1787#
+TYMTTY	   605	   641	  1802#
+UCTRLO	   291#	  1104
+UPDATE	   279	   973	  1011#
+UPDCUR	  1016	  1023#
+USEFI1	   746#	   750
+USEFIL	   679	   736#	   740	   743
+USETTC	   721	   726#	   730
+USETTY	   676	   720#
+USRAUN	   349	  1794#
+USRFPN	   345	   350	   353	   369	   373	   376	   397	   421	   451	  1795#
+USRLIC	   341	   394	   404	  1792#
+USRNAM	   343	   352	   364	   415	   422	  1793#
+USRPPN	   347	   398	   401	  1768#
+USRPRV	   339	   462	  1791#
+V	   248#	   339	   341	   343	   345	   347	   349	   394	   395	   397	   398	   400	   402	   404
+	   405	   407	   429	   431	   433	   436	   438	   515	   516	   517	   518	   519	   520	   521
+	   522	   524	   537	   554	   555	   556	   557	   558	   559	   560	   561	   572	   573	   574
+	   578	   579	   580	   581	   582	   583	   584	   585	   586	   587	   588	   589	   590	   591
+	   592	   655	   656	   658	   659	   662	   675	   677	   678	   680	   683	   689	   698	   700
+	   706	   708	   711	   712	   715	   723	   727	   728	   729	   732	   739	   740	   741	   742
+	   744	   749	   750	   754	   756	   757	   759	   760	   761	   789	   790	   791	   793	   825
+	   826	   838	   839	   844	   847	   851	   852	   855	   883	   884	   892	   893	   894	   897
+	   898	   899	   901	   904	   905	   906	   907	   908	   911	   913	   928	   930	   931	   934
+	   935	   936	   937	   938	   939	   958	   959	   960	   961	   967	   969	   975	   981	   983
+	   988	   989	   990	   991	   993	   994	  1013	  1017	  1018	  1019	  1020	  1021	  1026	  1028
+	  1029	  1040	  1041	  1048	  1054	  1055	  1056	  1137	  1138	  1141	  1146	  1147	  1148	  1149
+	  1150	  1151	  1154	  1156	  1158	  1161	  1162	  1163	  1164	  1169	  1173	  1180	  1181	  1182
+	  1183	  1184	  1190	  1191	  1192	  1194	  1198	  1199	  1207	  1208	  1209	  1212	  1213	  1216
+	  1217	  1218	  1219	  1223	  1225	  1230	  1234	  1240	  1241	  1242	  1245	  1246	  1247	  1248
+	  1249	  1250	  1251	  1252	  1254	  1255	  1256	  1257	  1261	  1263	  1268	  1269	  1270	  1271
+	  1272	  1273	  1275	  1277	  1282	  1295	  1327	  1343	  1355	  1356	  1357	  1362	  1363	  1364
+	  1365	  1366	  1367	  1374	  1375	  1376	  1388	  1389	  1390	  1395	  1396	  1397	  1398	  1399
+	  1400	  1411	  1412	  1413	  1418	  1419	  1420	  1421	  1422	  1423	  1433	  1442	  1453	  1488
+	  1489	  1490	  1492	  1497	  1499	  1505	  1532	  1533	  1534	  1535	  1543	  1544	  1546	  1547
+	  1568	  1570	  1574	  1575	  1603	  1604	  1605	  1607	  1612	  1615	  1619	  1621	  1623	  1624
+	  1625	  1627	  1652	  1653	  1654	  1655	  1662	  1663	  1665	  1666	  1675	  1676	  1678	  1679
+	  1680	  1682	  1685	  1688	  1689	  1691	  1692	  1693	  1695
+VFILE	  1075	  1102#
+VUECPY	   421#	   428	   445	   449	   454	   458
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Symbol cross reference
+
+VUEEDT	     7#	   262
+VUEMIN	     6#	   262
+VUETYP	   280	  1770#
+VUEVER	     5#	   262
+VUEWHO	     4#	   262
+WBREAK	   287	  1439#
+WHITES	   287	  1428#
+WHTBRE	   287	  1417#	  1432
+WHTCHX	   287	  1410#
+WLOSS0	   962	   967#
+WLOSS2	   970	   981#
+WLOSS4	   982	   988#
+WLOSSV	   944	   960#
+WRITEL	   279	   955#
+WRITES	   279	   929#
+WRTNUM	   279	   888#
+WRTOCT	   279	   879#
+WS$LP	   938#	   941
+WS$PTR	   937	   938	  1726#
+XPREFI	   291#	   689
+ZAPDEV	  1827#
+.AXCFS	   312#	   621
+.AXI8C	   301#	   726
+.AXI8S	   302#	  1068	  1096
+.AXICS	   309#
+.AXO8I	   303#	   609	   851
+.AXOBR	   307#	   619
+.AXOST	   310#
+.AXPTR	   304#	   870
+.AXRVX	   311#	   616	   643
+.AXSIC	   305#	   655	   722
+.AXSYB	   306#	   611	   623	   636
+.AXTTP	   313#	  1135
+.AXWID	   308#	  1136
+.GTAUN	   323#	  1162
+.GTFPN	   322#	  1161
+.GTLIC	   324#	  1156
+.GTNAM	   326#	  1154
+.GTPPN	   325#
+.GTPRV	   327#	  1146	  1158
+.IOBIN	   320#	   622
+.IOIMG	   319#
+.JBDDT	   361
+.JBFF	   519	   524	   537	   538
+.JBREL	   521	   539
+.JBVER	   261
+View	Macro support subroutines for VUE	MACRO %53B(1156)-1 09:09  1-Jan-83 Page 1
+VUE	INF	23-Aug-71 17:42	
+Macro/Opdef cross reference
+
+AUXCAL	   296#	   610	   612	   617	   620	   622	   624	   637	   645	   656	   724	   727	   852	   871
+	  1069	  1097	  1138
+EXIT	  1128
+GETLCH	   604	  1055
+GETTAB	  1147	  1163
+HIBER	   614	   626	   639
+OUTSTR	  1702	  1708
+PJOB	  1173
+PJRST	   299#	   562	   914	   944	   945
+PUTLSA	   298#	   391
+RESCAN	  1058
+RUN	   496
+SETLCH	   607	   642
+SETMOD	   297#
+SKPINL	  1059
+SLEEP	   729  \qWÒ
